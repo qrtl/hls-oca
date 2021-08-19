@@ -1,7 +1,7 @@
 # Copyright 2020 Quartile Limited
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 {
-    "name": "Purchase Order Incoterm Place",
+    "name": "Purchase Order Incoterm Extend",
     "version": "12.0.1.0.0",
     "website": "https://github.com/OCA/purchase-workflow",
     "author": "Quartile Limited, " "Odoo Community Association (OCA)",
