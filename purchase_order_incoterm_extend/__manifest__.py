@@ -1,4 +1,4 @@
-# Copyright 2020 Quartile Limited
+# Copyright 2021 Quartile Limited
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 {
     "name": "Purchase Order Incoterm Extend",
@@ -7,7 +7,7 @@
     "author": "Quartile Limited, " "Odoo Community Association (OCA)",
     "category": "Purchase",
     "license": "LGPL-3",
-    "depends": ["sale_stock"],
+    "depends": ["purchase_stock"],
     "data": ["views/purchase_order_views.xml", "report/purchase_order_report_templates.xml"],
     "installable": True,
 }
