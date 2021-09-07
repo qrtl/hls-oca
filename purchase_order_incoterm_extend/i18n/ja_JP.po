@@ -17,8 +17,8 @@ msgstr ""
 
 #. module: purchase_order_incoterm_extend
 #: model_terms:ir.ui.view,arch_db:purchase_order_incoterm_extend.report_purchaseorder_document_inherit_purchase_order
-msgid "Incoterms:"
-msgstr "インコタームズ:"
+msgid "<strong>Incoterms:</strong>"
+msgstr "<strong>インコタームズ:</strong>"
 
 #. module: purchase_order_incoterm_extend
 #: model:ir.model.fields,field_description:purchase_order_incoterm_extend.field_purchase_order__incoterm_place
