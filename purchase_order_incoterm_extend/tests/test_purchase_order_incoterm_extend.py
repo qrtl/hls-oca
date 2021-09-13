@@ -1,5 +1,7 @@
 # Copyright 2018 Tecnativa - Sergio Teruel
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+from odoo.odoo.tools.misc import file_open
+from typing import Container
 from odoo import fields
 from odoo.tests.common import SavepointCase, tagged
 
@@ -8,54 +10,66 @@ from odoo.tests.common import SavepointCase, tagged
 class TestPurchaseOrderIncotermExtend(SavepointCase):
 
     @classmethod
-    def setUpClass(self):
-        super(TestPurchaseOrderIncotermExtend, self).setUp()
-        # Useful models
-        self.PurchaseOrder = self.env['purchase.order']
-        self.PurchaseOrderLine = self.env['purchase.order.line']
-        self.AccountInvoice = self.env['account.invoice']
-        self.AccountInvoiceLine = self.env['account.invoice.line']
-        self.partner_id = self.env.ref('base.res_partner_1')
-        self.product_id_1 = self.env.ref('product.product_product_8')
-        self.product_id_2 = self.env.ref('product.product_product_11')
-
-        (self.product_id_1 | self.product_id_2).write({'purchase_method': 'purchase'})
-        self.po_vals = {
-            'partner_id': self.partner_id.id,
-            'order_line': [
-                (0, 0, {
-                    'name': self.product_id_1.name,
-                    'product_id': self.product_id_1.id,
-                    'product_qty': 5.0,
-                    'product_uom': self.product_id_1.uom_po_id.id,
-                    'price_unit': 500.0,
-                    'date_planned': datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                }),
-                (0, 0, {
-                    'name': self.product_id_2.name,
-                    'product_id': self.product_id_2.id,
-                    'product_qty': 5.0,
-                    'product_uom': self.product_id_2.uom_po_id.id,
-                    'price_unit': 250.0,
-                    'date_planned': datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                })],
+    def setUpClass(cls):
+        super().setUpClass()
+        super().setUpClass()
+        cls.product_uom_kg = cls.env.ref('uom.product_uom_kgm')
+        cls.product_uom_gram = cls.env.ref('uom.product_uom_gram')
+        cls.product_uom_unit = cls.env.ref('uom.product_uom_unit')
+        cls.product = cls.env['product.product'].create({
+            'name': 'test',
+            'uom_id': cls.product_uom_kg.id,
+            'uom_po_id': cls.product_uom_kg.id,
+        })
+        cls.partner = cls.env['res.partner'].create({
+            'name': 'test-partner',
+            'supplier': True,
+        })
+        type_obj = cls.env['stock.picking.type']
+        company_id = cls.env.user.company_id.id
+        picking_type_id = type_obj.search([
+            ('code', '=', 'incoming'),
+            ('warehouse_id.company_id', '=', company_id)
+        ], limit=1)
+        if not picking_type_id:
+            picking_type_id = cls.env.ref('stock.picking_type_in')
+        cls.purchase_order_obj = cls.env['purchase.order']
+        po_val = {
+            'partner_id': cls.partner.id,
+            'company_id': cls.env.user.company_id.id,
+            'picking_type_id': picking_type_id.id,
+            'order_line': [(0, 0, {
+                'name': cls.product.name,
+                'product_id': cls.product.id,
+                'product_qty': 1,
+                'product_uom': cls.product.uom_id.id,
+                'price_unit': 1000.00,
+                'date_planned': fields.Datetime.now(),
+                 'incoterm_place': 'TestSentence',
+            })],
         }
+        po = cls.purchase_order_obj.new(po_val)
+        po.onchange_partner_id()
+        cls.order = cls.purchase_order_obj.create(po_val)
 
     def test_01_onchange_incoterm_place(self):
-        self.order.order_line.write({
-            'secondary_uom_id': self.secondary_unit.id,
-            'secondary_uom_qty': 5,
-        })
-        self.order.order_line._onchange_secondary_uom()
-        self.assertEqual(
-            self.order.order_line.product_qty, 3.5)
+        self.assertTrue(self.order, 'Purchase: no purchase order created')
 
     def test_02_incoterm_place_allow_empty(self):
-        self.order.order_line.\
-            _onchange_product_id_purchase_order_secondary_unit()
-        self.assertEqual(
-            self.order.order_line.secondary_uom_id, self.secondary_unit)
+        self.order.update({
+            'incoterm_place': '',
+        })
+        self.assertTrue(self.order, 'Purchase: no purchase order created')
+
 
     def test_03_incoterm_place_able_to_update(self):
+        self.order.update({
+            'incoterm_place': 'TestSentence2',
+        })
+        self.assertTrue(self.order, 'Purchase: no purchase order created')
 
-    def test_04_incoterm_place_validate_only_char_type(self):
+    def test_04_incoterm_place_able_to_contain_zenkaku_char(self):
+        self.order.update({
+            'incoterm_place': 'テスト　（全角スペース）文章',
+        })
+        self.assertTrue(self.order, 'Purchase: no purchase order created')
