@@ -121,12 +121,16 @@ class TestProductSecondaryUnit(SavepointCase):
             sum(delivery_order.move_line_ids.mapped('secondary_uom_qty'))
         self.assertEquals(uom_qty, 20.0)
         self.assertEquals(secondary_uom_qty, 40.0)
-        # After picking validation secondary_uom_qty not reset to zero
-        delivery_order.move_lines.quantity_done = 20.0
+        # After picking validation secondary_uom_qty reflects the processed qty
+        delivery_order.move_lines.quantity_done = 15.0
         delivery_order.action_done()
         secondary_uom_qty = \
             sum(delivery_order.move_line_ids.mapped('secondary_uom_qty'))
-        self.assertEquals(secondary_uom_qty, 40.0)
+        self.assertEquals(secondary_uom_qty, 30.0)
+        backorder = StockPicking.search([('backorder_id', '=', delivery_order.id)])
+        backorder_secondary_uom_qty = \
+            sum(backorder.move_line_ids.mapped('secondary_uom_qty'))
+        self.assertEquals(backorder_secondary_uom_qty, 10.0)
 
     def test_04_picking_secondary_unit(self):
         product = self.product_template.product_variant_ids[0]
