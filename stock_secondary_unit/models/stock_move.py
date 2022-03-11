@@ -74,6 +74,21 @@ class StockMove(models.Model):
         ) != 0:
             self.secondary_uom_qty = qty
 
+    def _action_confirm(self, merge=True, merge_into=False):
+        """Need this to update secondary_uom_qty of the moves for newly created
+        backorders.
+        """
+        moves = super()._action_confirm(merge=merge, merge_into=merge_into)
+        for move in moves:
+            move.onchange_secondary_unit_product_uom_qty()
+        return moves
+
+    def _action_done(self):
+        """Need this to update secondary_uom_qty of the partially processed moves."""
+        moves = super()._action_done()
+        for move in moves:
+            move.onchange_secondary_unit_product_uom_qty()
+        return moves
 
 class StockMoveLine(models.Model):
     _inherit = ['stock.move.line', 'stock.secondary.unit.mixin']
