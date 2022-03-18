@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 from odoo.addons import decimal_precision as dp
-from odoo.tools.float_utils import float_round
+from odoo.tools.float_utils import float_compare, float_round
 
 
 class StockSecondaryUnitMixin(models.AbstractModel):
@@ -28,6 +28,67 @@ class StockMove(models.Model):
         res['secondary_uom_qty'] = self[-1:].secondary_uom_qty
         return res
 
+    @api.onchange('secondary_uom_id', 'secondary_uom_qty')
+    def onchange_secondary_uom(self):
+        if not self.secondary_uom_id:
+            return
+        factor = self.secondary_uom_id.factor * self.product_uom.factor
+
+        qty = float_round(
+            self.secondary_uom_qty * factor,
+            precision_rounding=self.product_uom.rounding
+        )
+        if float_compare(
+            self.product_uom_qty, qty, precision_rounding=self.product_uom.rounding
+        ) != 0:
+            self.product_uom_qty = qty
+
+    @api.onchange('product_uom_qty')
+    def onchange_secondary_unit_product_uom_qty(self):
+        if not self.secondary_uom_id:
+            return
+        factor = self.secondary_uom_id.factor * self.product_uom.factor
+
+        qty = float_round(
+            self.product_uom_qty / (factor or 1.0),
+            precision_rounding=self.secondary_uom_id.uom_id.rounding
+        )
+        if float_compare(
+            self.secondary_uom_qty,
+            qty,
+            precision_rounding=self.secondary_uom_id.uom_id.rounding
+        ) != 0:
+            self.secondary_uom_qty = qty
+
+    @api.onchange('product_uom')
+    def onchange_product_uom_for_secondary(self):
+        if not self.secondary_uom_id:
+            return
+        factor = self.product_uom.factor * self.secondary_uom_id.factor
+        qty = float_round(
+            self.product_uom_qty / (factor or 1.0),
+            precision_rounding=self.product_uom.rounding
+        )
+        if float_compare(
+            self.secondary_uom_qty, qty, precision_rounding=self.product_uom.rounding
+        ) != 0:
+            self.secondary_uom_qty = qty
+
+    def _action_confirm(self, merge=True, merge_into=False):
+        """Need this to update secondary_uom_qty of the moves for newly created
+        backorders.
+        """
+        moves = super()._action_confirm(merge=merge, merge_into=merge_into)
+        for move in moves:
+            move.onchange_secondary_unit_product_uom_qty()
+        return moves
+
+    def _action_done(self):
+        """Need this to update secondary_uom_qty of the partially processed moves."""
+        moves = super()._action_done()
+        for move in moves:
+            move.onchange_secondary_unit_product_uom_qty()
+        return moves
 
 class StockMoveLine(models.Model):
     _inherit = ['stock.move.line', 'stock.secondary.unit.mixin']
@@ -43,10 +104,38 @@ class StockMoveLine(models.Model):
                 'product_uom_qty', vals.get('qty_done', 0.0))
             qty = float_round(
                 move_line_qty / (factor or 1.0),
-                precision_rounding=move.secondary_uom_id.uom_id.factor
+                precision_rounding=move.secondary_uom_id.uom_id.rounding
             )
             vals.update({
                 'secondary_uom_qty': qty,
                 'secondary_uom_id': move.secondary_uom_id.id,
             })
         return super().create(vals)
+
+    @api.multi
+    def write(self, vals):
+        move_lines_with_second_unit = self.filtered(
+            lambda ml: ml.move_id.secondary_uom_id)
+        res = super(StockMoveLine, self - move_lines_with_second_unit).write(
+            vals)
+        for rec in move_lines_with_second_unit:
+            move = rec.move_id
+            uom = rec.product_id.uom_id
+            factor = move.secondary_uom_id.factor * uom.factor
+            if 'product_uom_qty' in vals and vals['product_uom_qty'] == 0:
+                # The picking has been validated and product_uom_qty is
+                # reset to zero
+                move_line_qty = move.quantity_done
+            else:
+                move_line_qty = vals.get(
+                    'product_uom_qty', rec.product_uom_qty)
+            qty = float_round(
+                move_line_qty / (factor or 1.0),
+                precision_rounding=move.secondary_uom_id.uom_id.rounding
+            )
+            vals.update({
+                'secondary_uom_qty': qty,
+                'secondary_uom_id': move.secondary_uom_id.id,
+            })
+            res = super(StockMoveLine, rec).write(vals)
+        return res
