@@ -39,4 +39,3 @@ class AuditlogAutovacuum(models.TransientModel):
                 "AUTOVACUUM - %s '%s' records deleted",
                 nb_records, data_model)
         return True
-        
