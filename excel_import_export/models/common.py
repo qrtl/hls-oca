@@ -4,7 +4,6 @@
 import re
 import uuid
 import csv
-import base64
 import string
 import itertools
 import logging
