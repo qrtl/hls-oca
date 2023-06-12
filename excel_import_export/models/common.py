@@ -224,8 +224,7 @@ def str_to_number(input_val):
 
 
 def csv_from_excel(excel_content, delimiter, quote):
-    decoded_data = base64.decodestring(excel_content)
-    wb = xlrd.open_workbook(file_contents=decoded_data)
+    wb = xlrd.open_workbook(file_contents=excel_content)
     sh = wb.sheet_by_index(0)
     content = StringIO()
     quoting = csv.QUOTE_ALL
@@ -245,7 +244,7 @@ def csv_from_excel(excel_content, delimiter, quote):
             row.append(x)
         wr.writerow(row)
     content.seek(0)  # Set index to 0, and start reading
-    out_file = base64.b64encode(content.getvalue().encode('utf-8'))
+    out_file = content.getvalue().encode("utf-8")
     return out_file
 
 
