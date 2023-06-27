@@ -2361,7 +2361,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_financial_report.field_journal_ledger_report_wizard__with_account_name
 #: model:ir.model.fields,field_description:account_financial_report.field_report_journal_ledger__with_account_name
 msgid "With Account Name"
-msgstr ""Con nome del conto
+msgstr "Con nome del conto"
 
 #. module: account_financial_report
 #: code:addons/account_financial_report/report/general_ledger_xlsx.py:90
