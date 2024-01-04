@@ -71,7 +71,7 @@ class ExportXLSXWizard(models.TransientModel):
         out_file, out_name = Export.export_xlsx(self.template_id,
                                                 self.res_model,
                                                 safe_eval(self.res_ids)
-        )
+                                                )
         self.write({'state': 'get', 'data': out_file, 'name': out_name})
         return {
             'type': 'ir.actions.act_window',

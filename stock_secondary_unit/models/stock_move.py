@@ -90,6 +90,7 @@ class StockMove(models.Model):
             move.onchange_secondary_unit_product_uom_qty()
         return moves
 
+
 class StockMoveLine(models.Model):
     _inherit = ['stock.move.line', 'stock.secondary.unit.mixin']
     _name = 'stock.move.line'
