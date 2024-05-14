@@ -1,8 +1,4 @@
 # generated from manifests external_dependencies
 openpyxl
-py3o.formats
-py3o.template
-PyPDF2
 xlrd
-xlsxwriter
 xlwt
