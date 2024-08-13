@@ -2,8 +2,16 @@
 <!-- Copyright 2018 Tecnativa - Sergio Teruel
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
+<!--
+This template is not used.
+Therefore, it is commented out.
+Background: The user prefers to display both the secondary quantity and the standard quantity 
+in the same column on the delivery slip. 
+As this template only displays the secondary quantity, 
+it is no longer needed. 240809 Task:4419
+-->
 
-    <template id="report_delivery_document" inherit_id="stock.report_delivery_document" priority="8">
+    <!-- <template id="report_delivery_document" inherit_id="stock.report_delivery_document" priority="8">
         <xpath expr='//table[@t-if="o.state!=&apos;done&apos;"]/thead/tr/th' position="after">
             <th><strong>Secondary Qty</strong></th>
         </xpath>
@@ -22,6 +30,6 @@
                 <span t-field="move_line.secondary_uom_id"/>
             </td>
         </xpath>
-    </template>
+    </template> -->
 
 </odoo>
