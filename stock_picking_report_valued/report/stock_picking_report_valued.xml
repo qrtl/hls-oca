@@ -34,7 +34,11 @@
                         t-field="move_line.sale_tax_description"/></td>
             </t>
         </xpath>
-        <xpath expr="//table[@t-if=&quot;o.move_line_ids and o.state==&apos;done&apos;&quot;]" position="after">
+        <!-- This part of the template will not be used. In Japanese business practices, 
+        if a delivery slip shows the price excluding tax, the tax, and the total separately, 
+        it could cause issues if there are inconsistencies with the qualified invoice.
+        240912 Task:4419 -->
+        <!-- <xpath expr="//table[@t-if=&quot;o.move_line_ids and o.state==&apos;done&apos;&quot;]" position="after">
             <t t-if="o.valued and o.sale_id and o.move_line_ids">
                 <table class="table table-condensed mt32">
                     <thead>
@@ -59,7 +63,7 @@
                     </tbody>
                 </table>
             </t>
-        </xpath>
+        </xpath> -->
     </template>
 
 </odoo>
