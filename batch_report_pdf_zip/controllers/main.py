@@ -8,6 +8,8 @@ from odoo.addons.web.controllers.main import ReportController
 from io import BytesIO
 from datetime import datetime
 import ast
+import logging
+
 
 class ExtendedReportController(ReportController):
 
@@ -22,9 +24,9 @@ class ExtendedReportController(ReportController):
         # Extend logic for ZIP generation when `is_zip` is enabled and converter is PDF
         if report.is_zip and converter == "pdf":
             context = dict(request.env.context)
-
+            doc_ids = []
             if docids:
-                docids = [int(i) for i in docids.split(',')]
+                doc_ids = [int(i) for i in docids.split(',')]
 
             # Handling context data passed
             if data.get('options'):
@@ -35,43 +37,39 @@ class ExtendedReportController(ReportController):
                     del data['context']['lang']
                 context.update(data['context'])
 
+            # Collect PDF attachments
             attachments = []
-            for doc_id in docids:
+            for doc_id in doc_ids:
                 # Generate PDF for each document
                 pdf_content, _ = report.with_context(context).render_qweb_pdf([doc_id], data=data)
-                
-                # Create attachment for each PDF
-                attachment = request.env['ir.attachment'].create({
-                    'name': f'{report.name}_{doc_id}.pdf',
-                    'type': 'binary',
-                    'datas': base64.b64encode(pdf_content),
-                    'res_model': report.model,
-                    'res_id': doc_id,
-                    'mimetype': 'application/pdf'
-                })
-                attachments.append(attachment)
+                pdf_name = f'{report.name}_{doc_id}.pdf'
 
-            # Create a dictionary for storing file paths and names
-            file_dict = {}
-            for attachment in attachments:
-                document = request.env[attachment.res_model].search([('id', '=', attachment.res_id)])
-                document_name = f"[{document.name.replace('/', '_')}]" if document.name else ''
-                date = f"[{datetime.today().strftime('%Y-%m-%d')}]"
-                file_name = f"{document_name}{date}{attachment.name}"
-                file_dict[f"{attachment.store_fname}:{file_name}"] = dict(
-                    path=attachment._full_path(attachment.store_fname), name=file_name
-                )
+                # Collect PDFs as binary data
+                attachments.append((pdf_name, pdf_content))
 
             # Generate the ZIP file
             zip_filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
             bitIO = BytesIO()
-            zip_file = zipfile.ZipFile(bitIO, "w", zipfile.ZIP_DEFLATED)
-            for file_info in file_dict.values():
-                zip_file.write(file_info['path'], file_info['name'])
-            zip_file.close()
+            with zipfile.ZipFile(bitIO, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                for pdf_name, pdf_content in attachments:
+                    zip_file.writestr(pdf_name, pdf_content)
             
-            # Return the ZIP file as the response
-            return super(ExtendedReportController, self).report_routes(reportname, docids, converter, **data)
+            # Get the length of the content (important for large files)
+            try:
+                # Your existing ZIP generation and response code here
+                zip_content = bitIO.getvalue()
+                content_length = len(zip_content)
+                logging.info("Zop__________")
+                logging.info(f"ZIP file size: {content_length} bytes")
+                return request.make_response(
+                    zip_content,
+                    headers=[('Content-Type', 'application/x-zip-compressed'), ('Content-Disposition', content_disposition(zip_filename))]
+                )
+            except Exception as e:
+                # Log the error details
+                logging.info("ERRO____________")
+                logging.exception("Error generating or returning ZIP file: %s", str(e))
+                return request.make_response("An error occurred while generating the ZIP file.", 500)
 
         # If not ZIP, call the parent method to handle standard behavior
         return super(ExtendedReportController, self).report_routes(reportname, docids, converter, **data)
