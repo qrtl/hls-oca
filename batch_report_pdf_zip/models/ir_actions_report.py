@@ -1,12 +1,10 @@
+# Copyright 2024 Quartile (https://www.quartile.co)
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-import zipfile
-import io
-import base64
-from odoo import models, fields, api
-import logging
+from odoo import models, fields
+
 
 class IrActionsReport(models.Model):
     _inherit = "ir.actions.report"
 
-    
-    is_zip = fields.Boolean(string="Download as ZIP", help="Generate one PDF per record and download them as a ZIP file")
+    report_type = fields.Selection(selection_add=[("zip", "ZIP")])
