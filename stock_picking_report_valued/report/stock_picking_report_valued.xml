@@ -35,17 +35,17 @@
             </t>
         </xpath>
         <!-- This part of the template will not be used. In Japanese business practices, 
-        if a delivery slip shows the price excluding tax, the tax, and the total separately, 
+        if a delivery slip shows the price the tax, and the total separately, 
         it could cause issues if there are inconsistencies with the qualified invoice.
         240912 Task:4419 -->
-        <!-- <xpath expr="//table[@t-if=&quot;o.move_line_ids and o.state==&apos;done&apos;&quot;]" position="after">
+        <xpath expr="//table[@t-if=&quot;o.move_line_ids and o.state==&apos;done&apos;&quot;]" position="after">
             <t t-if="o.valued and o.sale_id and o.move_line_ids">
                 <table class="table table-condensed mt32">
                     <thead>
                         <tr>
                             <th class="text-right"><strong>Untaxed Amount</strong></th>
-                            <th class="text-right"><strong>Taxes</strong></th>
-                            <th class="text-right"><strong>Total</strong></th>
+                            <!-- <th class="text-right"><strong>Taxes</strong></th>
+                            <th class="text-right"><strong>Total</strong></th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -53,17 +53,17 @@
                             <td class="text-right">
                                 <span t-field="o.amount_untaxed"/>
                             </td>
-                            <td class="text-right">
+                            <!-- <td class="text-right">
                                 <span t-field="o.amount_tax"/>
                             </td>
                             <td class="text-right">
                                 <span t-field="o.amount_total"/>
-                            </td>
+                            </td> -->
                         </tr>
                     </tbody>
                 </table>
             </t>
-        </xpath> -->
+        </xpath>
     </template>
 
 </odoo>
