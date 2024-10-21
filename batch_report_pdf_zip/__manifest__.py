@@ -6,7 +6,7 @@
     "category": "Report",
     "version": "12.0.1.0.0",
     "author": "Quartile, Odoo Community Association (OCA)",
-    "website": "https://www.quartile.co",
+    "website": "https://github.com/OCA/reporting-engine",
     "license": "AGPL-3",
     "depends": ["base"],
     "data": [

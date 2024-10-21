@@ -9,6 +9,8 @@ from odoo.addons.web.controllers.main import ReportController
 from io import BytesIO
 from datetime import datetime
 import json
+from odoo.tools.safe_eval import safe_eval
+import time
 
 
 class ExtendedReportController(ReportController):
@@ -16,10 +18,11 @@ class ExtendedReportController(ReportController):
     @http.route()
     def report_routes(self, reportname, docids=None, converter=None, **data):
         report = request.env['ir.actions.report']._get_report_from_name(reportname)
+        report_name = report.report_file
         doc_ids = []
-        if docids:
-            doc_ids = [int(i) for i in docids.split(',')]
-        if converter == "zip" and report.is_zip and len(doc_ids) > 1:
+        if converter == "zip":
+            if docids:
+                doc_ids = [int(i) for i in docids.split(',')]
             context = dict(request.env.context)
             if data.get('options'):
                 data.update(json.loads(data.pop('options')))
@@ -33,7 +36,12 @@ class ExtendedReportController(ReportController):
                 pdf_content, _ = report.with_context(context).render_qweb_pdf(
                     [doc_id], data=data
                 )
-                pdf_name = f'{report.name}_{doc_id}.pdf'
+                if report.print_report_name:
+                    obj = request.env[report.model].browse(doc_id)
+                    report_name = safe_eval(report.print_report_name,
+                                            {'object': obj, 'time': time})
+                report_name = report_name.replace('/', '_')
+                pdf_name = f'{report_name}.pdf'
                 attachments.append((pdf_name, pdf_content))
             # Generate the ZIP file
             zip_filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
@@ -50,8 +58,6 @@ class ExtendedReportController(ReportController):
                 zip_content,
                 headers=headers
             )
-        if converter == "zip" and report.report_type=="qweb-pdf":
-            converter = "pdf"
         return super(ExtendedReportController, self).report_routes(
             reportname, docids, converter, **data
         )

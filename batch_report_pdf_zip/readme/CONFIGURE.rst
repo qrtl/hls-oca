@@ -1,1 +1,1 @@
-To enable the ZIP file feature, please select 'ZIP' as the report type for the specific report.
+To enable the ZIP file feature, please check the 'Is Zip' option under the 'Advanced Properties' tab for the specific report.
