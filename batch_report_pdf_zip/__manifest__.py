@@ -10,6 +10,7 @@
     "license": "AGPL-3",
     "depends": ["base"],
     "data": [
+        "views/ir_actions_report_views.xml",
         "views/web_client_templates.xml",
     ],
     "installable": True,

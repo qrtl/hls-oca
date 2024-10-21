@@ -15,12 +15,12 @@ class ExtendedReportController(ReportController):
 
     @http.route()
     def report_routes(self, reportname, docids=None, converter=None, **data):
-        if converter == "zip":
-            report = request.env['ir.actions.report']._get_report_from_name(reportname)
+        report = request.env['ir.actions.report']._get_report_from_name(reportname)
+        doc_ids = []
+        if docids:
+            doc_ids = [int(i) for i in docids.split(',')]
+        if converter == "zip" and report.is_zip and len(doc_ids) > 1:
             context = dict(request.env.context)
-            doc_ids = []
-            if docids:
-                doc_ids = [int(i) for i in docids.split(',')]
             if data.get('options'):
                 data.update(json.loads(data.pop('options')))
             if data.get('context'):
@@ -50,6 +50,8 @@ class ExtendedReportController(ReportController):
                 zip_content,
                 headers=headers
             )
+        if converter == "zip" and report.report_type=="qweb-pdf":
+            converter = "pdf"
         return super(ExtendedReportController, self).report_routes(
             reportname, docids, converter, **data
         )

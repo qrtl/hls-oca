@@ -7,4 +7,4 @@ from odoo import models, fields
 class IrActionsReport(models.Model):
     _inherit = "ir.actions.report"
 
-    report_type = fields.Selection(selection_add=[("zip", "ZIP")])
+    is_zip = fields.Boolean(help="If enabled, the report will be downloaded as a zip file for multiple records.")

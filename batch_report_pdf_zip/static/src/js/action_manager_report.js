@@ -76,7 +76,7 @@ odoo.define("batch_report_pdf_zip.report", function (require) {
 
         _executeReportAction: function (action, options) {
             var self = this;
-            if (action.report_type === 'zip') {
+            if (action.report_type === 'qweb-pdf' && action.is_zip === true) {
                 return self._triggerDownload(action, options, 'zip');
             }
             return this._super.apply(this, arguments);
