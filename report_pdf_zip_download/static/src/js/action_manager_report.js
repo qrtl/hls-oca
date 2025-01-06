@@ -1,7 +1,7 @@
 // © 2017 Creu Blanca
 // Copyright 2024 Quartile (https://www.quartile.co)
 // License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-odoo.define("batch_report_pdf_zip.report", function (require) {
+odoo.define("report_pdf_zip_download.report", function (require) {
     "use strict";
 
     var core = require("web.core");
@@ -76,8 +76,11 @@ odoo.define("batch_report_pdf_zip.report", function (require) {
 
         _executeReportAction: function (action, options) {
             var self = this;
+        
+            console.log(action.data);
+            console.log(action.context);
             if (action.context.active_ids && action.context.active_ids.length > 1) {
-                if (action.report_type === 'qweb-pdf' && action.is_zip === true) {
+                if (action.report_type === 'qweb-pdf' && action.zip_download === true) {
                     return self._triggerDownload(action, options, 'zip');
                 }
             }

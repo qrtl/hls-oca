@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.act_report_xml_view" />
         <field name="arch" type="xml">
             <field name="attachment" position="after">
-               <field name="is_zip" attrs="{'invisible':[('report_type','not in',['qweb-pdf'])]}" />
+               <field name="zip_download" attrs="{'invisible':[('report_type','not in',['qweb-pdf'])]}" />
             </field>
         </field>
     </record>
