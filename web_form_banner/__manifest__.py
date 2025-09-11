@@ -1,0 +1,16 @@
+# Copyright 2025 Quartile
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+{
+    "name": "Web Form Banner",
+    "version": "12.0.1.0.0",
+    "category": "Web",
+    "author": "Quartile, Odoo Community Association (OCA)",
+    "website": "https://github.com/OCA/web",
+    "license": "AGPL-3",
+    "depends": ["web"],
+    "data": [
+        "security/ir.model.access.csv",
+        "views/web_form_banner_rule_views.xml",
+    ],
+    'installable': True,
+}
