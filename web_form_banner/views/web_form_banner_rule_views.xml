@@ -5,12 +5,16 @@
         <field name="model">web_form_banner.rule</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="sequence" widget="handle" />
                 <field name="model_id" />
                 <field name="view_ids" widget="many2many_tags" />
                 <field name="severity"/>
-                <field name="message"/>
+                <!-- <field name="message"/> -->
                 <field name="xpath"/>
                 <field name="message_domain" />
+                <field name="message_template" />
+                <field name="message_values_expr" />
+                <field name="message_is_html" />
             </tree>
         </field>
     </record>
@@ -20,23 +24,27 @@
         <field name="arch" type="xml">
             <form string="Form Banner Rule">
                 <sheet>
+                    <div class="oe_button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"/>
+                        </button>
+                    </div>
                     <group>
                         <group>
                             <field name="model_id" options="{'no_create': True}"/>
                             <field name="model_name" invisible="1" />
-                            <field name="view_ids" options="{'no_create': True}" />
+                            <field name="view_ids" options="{'no_create': True}" widget="many2many_tags" />
                         </group>
                         <group>
-                            <field name="active" widget="boolean_toggle" />
-                            <field name="message"/>
-                            <field name="severity"/>
+                            <field name="xpath" placeholder="//sheet"/>
+                            <field name="message_domain" widget="domain" options="{'model': 'model_name', 'in_dialog': True}"/>
                         </group>
                     </group>
-                    <group string="Placement &amp; Condition" colspan="2">
-                        <field name="xpath" placeholder="//sheet"/>
-                        <field name="message_domain" widget="domain" options="{'model': 'model_name', 'in_dialog': True}"/>
-                        <!-- <field name="field_name" placeholder="x_show_warning"/>
-                        <field name="invert"/> -->
+                    <group>
+                        <field name="severity" />
+                        <field name="message_template" />
+                        <field name="message_values_expr" />
+                        <field name="message_is_html" />
                     </group>
                 </sheet>
             </form>

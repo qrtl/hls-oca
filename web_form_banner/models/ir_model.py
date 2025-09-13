@@ -62,10 +62,16 @@ class Base(models.AbstractModel):
             if not targets:
                 continue
             css = "alert alert-%s" % (rule.severity or "danger")
-            banner = etree.Element("div", {"class": css, "role": "alert"})
-            span = etree.SubElement(banner, "span")
-            span.text = rule.message or ""
-            invisible_parts = []   # each element is a FLAT token list
+            attrs = {"class": css, "role": "alert"}
+            # tag for dynamic fetch
+            attrs["data-wfb-rule-id"] = str(rule.id)
+            attrs["data-wfb-model"] = self._name
+            # start hidden; JS will show when non-empty
+            attrs["style"] = "display:none;"
+            banner = etree.Element("div", attrs)
+            span = etree.SubElement(banner, "span", {"style": "white-space: pre-line;"})
+            span.text = (rule.message_template or u"\u00A0")
+            invisible_parts = []  # each element is a FLAT token list
             # message_domain -> tokens for NOT(message_domain)
             if rule.message_domain:
                 try:

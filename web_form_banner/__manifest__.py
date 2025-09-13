@@ -10,6 +10,7 @@
     "depends": ["web"],
     "data": [
         "security/ir.model.access.csv",
+        "views/assets.xml",
         "views/web_form_banner_rule_views.xml",
     ],
     'installable': True,

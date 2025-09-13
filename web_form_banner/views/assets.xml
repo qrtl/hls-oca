@@ -1,0 +1,8 @@
+<!-- web_form_banner/views/assets.xml -->
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+        <script type="text/javascript" src="/web_form_banner/static/src/js/web_form_banner.js"/>
+        </xpath>
+    </template>
+</odoo>
