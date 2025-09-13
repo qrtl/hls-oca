@@ -1,12 +1,9 @@
 # Copyright 2025 Quartile
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from collections import defaultdict
-
-from odoo import api, fields, models, tools
+from odoo import api, fields, models
 from odoo.tools.safe_eval import safe_eval
-from odoo.tools import html_escape
-
+from string import Template
 
 class WebFormBannerRule(models.Model):
     _name = "web.form.banner.rule"
@@ -19,84 +16,94 @@ class WebFormBannerRule(models.Model):
     view_ids = fields.Many2many(
         "ir.ui.view",
         domain="[('type', '=', 'form'), ('model', '=', model_name)]",
-        help="Form view where the banner should be injected. If empty, applies to all "
-        "views of the model.",
+        help="Form view where the banner should be injected.",
     )
-    # message = fields.Html()
+    message = fields.Html(required=True, help="HTML template. You can use ${placeholders}.")
     severity = fields.Selection(
         [("info", "Info"), ("warning", "Warning"), ("danger", "Danger")],
         default="danger",
         required=True,
     )
     xpath = fields.Char(
-        "XPath",
         default="//sheet",
-        help="XPath of the node to insert the banner BEFORE."
+        help="XPath of the node to insert the banner BEFORE.",
     )
-    message_domain = fields.Char(
-        help="Optional domain to filter records where the banner is shown. "
-        "E.g. [('state', '=', 'draft')].",
+    # New: Python expression returning a dict controlling visibility/content.
+    # Example return:
+    #   {"visible": True, "severity": "warning", "values": {"title": "..."}, "html": "<b>...</b>"}
+    message_values_expr = fields.Text(
+        help=(
+            "Python expression evaluated server-side. Must return a dict.\n"
+            "Keys: visible(bool, default True), severity(str), values(dict for ${...} in message),\n"
+            "and/or html(str) to override template rendering."
+        )
+    )
+    # Optional: comma-separated fields the client should treat as dependencies for live recompute.
+    depends_fields = fields.Char(
+        help="Comma-separated field names to watch for live updates (e.g., 'partner_id,payment_term_id')."
     )
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
-    message_template = fields.Text(
-        translate=True,
-        required=True,
-        help="Template with placeholders. Use either %(key)s or {key} style."
-    )
-    message_values_expr = fields.Text(
-        "Value Expression",
-        help="Python expression returning a dict used to fill the template. "
-        "Env: record, env, user, ctx. Example: "
-        "{'class': (record.partner_id.comment or '').strip()}",
-    )
-    message_is_html = fields.Boolean(
-        "Message is HTML",
-        help="If enabled, the rendered message is treated as HTML. If disabled, "
-        "it will be escaped; line-breaks are preserved.",
-    )
 
+    # used by JS
     @api.model
-    def render_message(self, rule_id, model, res_id):
-        rule = self.sudo().browse(rule_id)
-        if not rule or not res_id:
-            return ""
-        record = self.env[model].browse(res_id)
-        # Build the values dict safely
-        localdict = {
+    def compute_message(self, rule_id, model, res_id):
+        """Return {visible, severity, html} for the given rule and record."""
+        rule = self.browse(int(rule_id)).sudo()
+        if not rule.exists() or not rule.active:
+            return {"visible": False}
+        record = self.env[model].browse(int(res_id)) if res_id else self.env[model]
+        # Build safe eval context
+        ctx = {
             "env": self.env,
             "user": self.env.user,
             "ctx": dict(self.env.context),
             "record": record,
         }
-        values = {}
-        if rule.message_values_expr and rule.message_values_expr.strip():
+
+        # helper: build form URL for a record
+        def _url_for(rec):
             try:
-                result = safe_eval(rule.message_values_expr.strip(), localdict) or {}
-                if isinstance(result, dict):
-                    # ensure string keys
-                    values = {str(k): ("" if v is None else v) for k, v in result.items()}
+                if not rec or not getattr(rec, "id", None):
+                    return ""
+                base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", default="")
+                return "%s/web#id=%d&model=%s&view_type=form" % (base, rec.id, rec._name)
             except Exception:
-                values = {}
-        lang = self.env.user.lang or self.env.context.get("lang")
-        template = (rule.with_context(lang=lang).message_template or "").strip()
-        # Render with tolerant formatting: support both %(k)s and {k}
-        text = ""
-        try:
-            if "%(" in template:
-                # %-style
-                text = template % defaultdict(str, values)
-            else:
-                # {key}-style
-                class _MissingDict(defaultdict):
-                    def __missing__(self, key): return ""
-                text = template.format_map(_MissingDict(str, values))
-        except Exception:
-            # No crashing on errors
-            text = ""
-        text = tools.ustr(text or "")
-        if rule.message_is_html:
-            # return as-is (JS uses .html(...))
-            return text
-        # Escape + preserve line breaks; your span uses white-space: normal
-        return html_escape(text).replace("\n", "<br/>")
+                return ""
+        ctx.update({"url_for": _url_for})
+
+        visible = True
+        severity = rule.severity or "danger"
+        values = {}
+        html = None
+        if rule.message_values_expr:
+            code = rule.message_values_expr.strip()
+            try:
+                # 1) try single-expression dict
+                out = safe_eval(code, ctx, mode="eval") or {}
+            except Exception:
+                # 2) allow multi-line; expect `result` to be set
+                #    IMPORTANT: nocopy=True so assignments write back into ctx
+                safe_eval(code, ctx, mode="exec", nocopy=True)
+                out = ctx.get("result") or {}
+            if not isinstance(out, dict):
+                return {"visible": False}
+            # pull control keys
+            visible = out.get("visible", True)
+            severity = out.get("severity", severity)
+            values = out.get("values", {})
+            html = out.get("html")
+            # convenience: if no explicit `values`, treat other keys as template vars
+            if not values:
+                values = {k: v for k, v in out.items() if k not in {"visible", "severity", "values", "html"}}
+
+        if not visible:
+            return {"visible": False}
+        # Render html using template if not provided directly
+        if not html:
+            tpl = Template(rule.message or "")
+            try:
+                html = tpl.safe_substitute(values)
+            except Exception:
+                html = rule.message or ""
+        return {"visible": True, "severity": severity, "html": html}

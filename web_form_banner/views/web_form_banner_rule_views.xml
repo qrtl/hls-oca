@@ -11,10 +11,9 @@
                 <field name="view_ids" widget="many2many_tags" />
                 <field name="severity"/>
                 <field name="xpath"/>
-                <field name="message_domain" />
-                <field name="message_template" />
-                <field name="message_values_expr" />
-                <field name="message_is_html" />
+                <field name="message" />
+                <field name="message_values_expr" placeholder="return {'visible': True, 'values': {'title': '...'}}" />
+                <field name="depends_fields" placeholder="partner_id,payment_term_id"/>
             </tree>
         </field>
     </record>
@@ -41,14 +40,13 @@
                         </group>
                         <group>
                             <field name="xpath" placeholder="//sheet"/>
-                            <field name="message_domain" widget="domain" options="{'model': 'model_name', 'in_dialog': True}"/>
                         </group>
                     </group>
                     <group>
                         <field name="severity" />
-                        <field name="message_template" />
+                        <field name="message" />
                         <field name="message_values_expr" />
-                        <field name="message_is_html" />
+                        <field name="depends_fields" placeholder="partner_id,payment_term_id"/>
                     </group>
                 </sheet>
             </form>
