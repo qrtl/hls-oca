@@ -7,14 +7,16 @@ class WebFormBannerRule(models.Model):
     _name = "web_form_banner.rule"
     _description = "Form Banner Rule"
 
-    view_id = fields.Many2one(
-        "ir.ui.view", required=True,
-        domain=[('type', '=', 'form')],
+    model_id = fields.Many2one("ir.model", ondelete="cascade", required=True)
+    model_name = fields.Char(related="model_id.model", store=True, readonly=True)
+    view_ids = fields.Many2many(
+        "ir.ui.view",
+        domain="[('type', '=', 'form'), ('model', '=', model_name)]",
         help="Form view where the banner should be injected."
     )
     message = fields.Html(required=True)
     severity = fields.Selection(
-        [("info", "info"), ("warning", "warning"), ("danger", "danger")],
+        [("info", "Info"), ("warning", "Warning"), ("danger", "Danger")],
         default="danger",
         required=True,
     )
@@ -22,12 +24,8 @@ class WebFormBannerRule(models.Model):
         default='//sheet',
         help="XPath of the node to insert the banner BEFORE."
     )
-    field_name = fields.Char(
-        help="Optional field on the record controlling visibility. "
-        "If boolean: show when True. If char/text: show when non-empty. "
-        "Leave empty to always show."
-    )
-    invert = fields.Boolean(
-        help="Invert visibility logic: show when field is False/empty."
+    message_domain = fields.Char(
+        help="Optional domain to filter records where the banner is shown. "
+        "E.g. [('state', '=', 'draft')]."
     )
     active = fields.Boolean(default=True)
