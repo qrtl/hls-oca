@@ -9,10 +9,11 @@ from odoo.tools import html_escape
 
 
 class WebFormBannerRule(models.Model):
-    _name = "web_form_banner.rule"
+    _name = "web.form.banner.rule"
     _description = "Form Banner Rule"
     _order = "sequence, id"
 
+    name = fields.Char(required=True)
     model_id = fields.Many2one("ir.model", ondelete="cascade", required=True)
     model_name = fields.Char(related="model_id.model", store=True, readonly=True)
     view_ids = fields.Many2many(

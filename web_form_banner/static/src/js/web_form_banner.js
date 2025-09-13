@@ -13,7 +13,7 @@ odoo.define("web_form_banner.save_plus_load", function (require) {
         $banners.each(function () {
             var $b = $(this);
             rpc.query({
-                model: "web_form_banner.rule",
+                model: "web.form.banner.rule",
                 method: "render_message",
                 args: [parseInt($b.data("wfb-rule-id")), $b.data("wfb-model"), resId],
             }).then(function (text) {
