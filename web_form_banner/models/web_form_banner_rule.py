@@ -1,9 +1,12 @@
 # Copyright 2025 Quartile
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from string import Template
+
 from odoo import api, fields, models
 from odoo.tools.safe_eval import safe_eval
-from string import Template
+from odoo.tools import html_escape
+
 
 class WebFormBannerRule(models.Model):
     _name = "web.form.banner.rule"
@@ -18,34 +21,38 @@ class WebFormBannerRule(models.Model):
         domain="[('type', '=', 'form'), ('model', '=', model_name)]",
         help="Form view where the banner should be injected.",
     )
-    message = fields.Html(required=True, help="HTML template. You can use ${placeholders}.")
+    xpath = fields.Char(
+        "XPath",
+        default="//sheet",
+        help="XPath of the node to insert the banner BEFORE.",
+    )
     severity = fields.Selection(
         [("info", "Info"), ("warning", "Warning"), ("danger", "Danger")],
         default="danger",
         required=True,
     )
-    xpath = fields.Char(
-        default="//sheet",
-        help="XPath of the node to insert the banner BEFORE.",
+    message = fields.Text(
+        required=True,
+        help="Template with ${placeholders}. If not HTML, it will be escaped.",
+    )
+    message_is_html = fields.Boolean(
+        "HTML",
+        help="If checked, 'message' is treated as raw HTML (no escaping). "
+        "If not checked, the rendered text is escaped and newlines become <br/>."
     )
     # New: Python expression returning a dict controlling visibility/content.
     # Example return:
     #   {"visible": True, "severity": "warning", "values": {"title": "..."}, "html": "<b>...</b>"}
-    message_values_expr = fields.Text(
+    message_value_expr = fields.Text(
         help=(
             "Python expression evaluated server-side. Must return a dict.\n"
             "Keys: visible(bool, default True), severity(str), values(dict for ${...} in message),\n"
             "and/or html(str) to override template rendering."
         )
     )
-    # Optional: comma-separated fields the client should treat as dependencies for live recompute.
-    depends_fields = fields.Char(
-        help="Comma-separated field names to watch for live updates (e.g., 'partner_id,payment_term_id')."
-    )
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
 
-    # used by JS
     @api.model
     def compute_message(self, rule_id, model, res_id):
         """Return {visible, severity, html} for the given rule and record."""
@@ -60,7 +67,6 @@ class WebFormBannerRule(models.Model):
             "ctx": dict(self.env.context),
             "record": record,
         }
-
         # helper: build form URL for a record
         def _url_for(rec):
             try:
@@ -76,14 +82,13 @@ class WebFormBannerRule(models.Model):
         severity = rule.severity or "danger"
         values = {}
         html = None
-        if rule.message_values_expr:
-            code = rule.message_values_expr.strip()
+        if rule.message_value_expr:
+            code = rule.message_value_expr.strip()
             try:
                 # 1) try single-expression dict
                 out = safe_eval(code, ctx, mode="eval") or {}
             except Exception:
                 # 2) allow multi-line; expect `result` to be set
-                #    IMPORTANT: nocopy=True so assignments write back into ctx
                 safe_eval(code, ctx, mode="exec", nocopy=True)
                 out = ctx.get("result") or {}
             if not isinstance(out, dict):
@@ -103,7 +108,12 @@ class WebFormBannerRule(models.Model):
         if not html:
             tpl = Template(rule.message or "")
             try:
-                html = tpl.safe_substitute(values)
+                rendered = tpl.safe_substitute(values)
             except Exception:
-                html = rule.message or ""
+                rendered = rule.message or ""
+            if rule.message_is_html:
+                html = rendered
+            else:
+                # Safe-by-default: escape and preserve line breaks
+                html = html_escape(rendered).replace("\n", "<br/>")
         return {"visible": True, "severity": severity, "html": html}
