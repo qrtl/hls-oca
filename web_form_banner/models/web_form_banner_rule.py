@@ -1,9 +1,11 @@
 # Copyright 2025 Quartile
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from lxml import etree
 from string import Template
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 from odoo.tools import html_escape
 
@@ -21,10 +23,17 @@ class WebFormBannerRule(models.Model):
         domain="[('type', '=', 'form'), ('model', '=', model_name)]",
         help="Form view where the banner should be injected.",
     )
-    xpath = fields.Char(
-        "XPath",
+    target_xpath = fields.Char(
+        "Target XPath",
         default="//sheet",
-        help="XPath of the node to insert the banner BEFORE.",
+        help="XPath of the node to insert the banner.",
+    )
+    position = fields.Selection(
+        [("before", "Before target"), ("after", "After target")],
+        string="Position",
+        default="before",
+        required=True,
+        help="Where to insert the placeholder relative to the first matched node."
     )
     severity = fields.Selection(
         [("info", "Info"), ("warning", "Warning"), ("danger", "Danger")],
@@ -32,8 +41,7 @@ class WebFormBannerRule(models.Model):
         required=True,
     )
     message = fields.Text(
-        required=True,
-        help="Template with ${placeholders}. If not HTML, it will be escaped.",
+        help="Template with ${placeholders}. If not HTML, it will be escaped. ",
     )
     message_is_html = fields.Boolean(
         "HTML",
@@ -51,6 +59,15 @@ class WebFormBannerRule(models.Model):
     )
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
+
+    @api.constrains("target_xpath")
+    def _check_target_xpath(self):
+        for rec in self:
+            xp = (rec.target_xpath or "").strip()
+            try:
+                etree.XPath(xp or "//sheet")
+            except (etree.XPathSyntaxError, etree.XPathEvalError) as e:
+                raise ValidationError("Invalid XPath:\n%s" % e)
 
     @api.model
     def _build_form_url(self, rec):
@@ -99,9 +116,13 @@ class WebFormBannerRule(models.Model):
             severity = out.get("severity", severity)
             values = out.get("values", {})
             html = out.get("html")
-            # convenience: if no explicit `values`, treat other keys as template vars
+            # If no explicit `values`, treat other keys as template vars
             if not values:
-                values = {k: v for k, v in out.items() if k not in {"visible", "severity", "values", "html"}}
+                values = {
+                    k: v for k, v in out.items() if k not in {
+                        "visible", "severity", "values", "html"
+                    }
+                }
         if not visible:
             return {"visible": False}
         # Render html using template if not provided directly
@@ -114,6 +135,5 @@ class WebFormBannerRule(models.Model):
             if rule.message_is_html:
                 html = rendered
             else:
-                # Safe-by-default: escape and preserve line breaks
                 html = html_escape(rendered).replace("\n", "<br/>")
         return {"visible": True, "severity": severity, "html": html}

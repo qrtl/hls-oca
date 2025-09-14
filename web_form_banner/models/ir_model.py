@@ -2,7 +2,9 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from lxml import etree
+
 from odoo import api, models
+
 
 class Base(models.AbstractModel):
     _inherit = "base"
@@ -29,8 +31,8 @@ class Base(models.AbstractModel):
         except Exception:
             return res
         for rule in rules:
-            targets = root.xpath(rule.xpath or "//sheet")
-            if not targets:
+            target = root.xpath(rule.target_xpath or "//sheet")
+            if not target:
                 continue
             # Lightweight placeholder; JS will fill and toggle visibility
             css = "o_form_banner alert alert-%s" % (rule.severity or "danger")
@@ -45,9 +47,12 @@ class Base(models.AbstractModel):
                     "style": "display:none;",
                 },
             )
-            # Insert BEFORE the first target
-            parent = targets[0].getparent()
-            if parent is not None:
-                parent.insert(parent.index(targets[0]), node)
+            parent = target[0].getparent()
+            if parent is None:
+                continue
+            if rule.position == "before":
+                parent.insert(parent.index(target[0]), node)
+            else:
+                target[0].addnext(node)
         res["arch"] = etree.tostring(root, encoding="unicode")
         return res
