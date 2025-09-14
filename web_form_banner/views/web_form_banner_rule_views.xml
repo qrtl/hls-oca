@@ -13,7 +13,7 @@
                 <field name="xpath"/>
                 <field name="message" />
                 <field name="message_is_html" />
-                <field name="message_value_expr" placeholder="return {'visible': True, 'values': {'title': '...'}}" />
+                <field name="message_value_code" placeholder="return {'visible': True, 'values': {'title': '...'}}" />
             </tree>
         </field>
     </record>
@@ -34,19 +34,19 @@
                     </div>
                     <group>
                         <group>
-                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="model_id" options="{'no_create':True}"/>
                             <field name="model_name" invisible="1" />
                             <field name="severity" />
                         </group>
                         <group>
-                            <field name="view_ids" options="{'no_create': True}" widget="many2many_tags" />
+                            <field name="view_ids" options="{'no_create':True}" widget="many2many_tags" />
                             <field name="xpath" placeholder="//sheet"/>
                         </group>
                     </group>
                     <group>
-                        <field name="message" />
+                        <field name="message" widget="ace" options="{'mode':'xml'}"/>
                         <field name="message_is_html" />
-                        <field name="message_value_expr" widget="ace" options="{'mode': 'python'}" />
+                        <field name="message_value_code" widget="ace" options="{'mode':'python'}" />
                     </group>
                 </sheet>
             </form>

@@ -40,10 +40,9 @@ class WebFormBannerRule(models.Model):
         help="If checked, 'message' is treated as raw HTML (no escaping). "
         "If not checked, the rendered text is escaped and newlines become <br/>."
     )
-    # New: Python expression returning a dict controlling visibility/content.
     # Example return:
     #   {"visible": True, "severity": "warning", "values": {"title": "..."}, "html": "<b>...</b>"}
-    message_value_expr = fields.Text(
+    message_value_code = fields.Text(
         help=(
             "Python expression evaluated server-side. Must return a dict.\n"
             "Keys: visible(bool, default True), severity(str), values(dict for ${...} in message),\n"
@@ -54,36 +53,39 @@ class WebFormBannerRule(models.Model):
     active = fields.Boolean(default=True)
 
     @api.model
+    def _build_form_url(self, rec):
+        try:
+            if not rec or not getattr(rec, "id", None):
+                return ""
+            base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", default="")
+            return "%s/web#id=%d&model=%s&view_type=form" % (base, rec.id, rec._name)
+        except Exception:
+            return ""
+
+    @api.model
+    def _get_safe_eval_context(self, record):
+        return {
+            "env": self.env,
+            "user": self.env.user,
+            "ctx": dict(self.env.context),
+            "record": record,
+            "url_for": self._build_form_url,
+        }
+
+    @api.model
     def compute_message(self, rule_id, model, res_id):
         """Return {visible, severity, html} for the given rule and record."""
         rule = self.browse(int(rule_id)).sudo()
         if not rule.exists() or not rule.active:
             return {"visible": False}
         record = self.env[model].browse(int(res_id)) if res_id else self.env[model]
-        # Build safe eval context
-        ctx = {
-            "env": self.env,
-            "user": self.env.user,
-            "ctx": dict(self.env.context),
-            "record": record,
-        }
-        # helper: build form URL for a record
-        def _url_for(rec):
-            try:
-                if not rec or not getattr(rec, "id", None):
-                    return ""
-                base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", default="")
-                return "%s/web#id=%d&model=%s&view_type=form" % (base, rec.id, rec._name)
-            except Exception:
-                return ""
-        ctx.update({"url_for": _url_for})
-
+        ctx = self._get_safe_eval_context(record)
         visible = True
         severity = rule.severity or "danger"
         values = {}
         html = None
-        if rule.message_value_expr:
-            code = rule.message_value_expr.strip()
+        if rule.message_value_code:
+            code = rule.message_value_code.strip()
             try:
                 # 1) try single-expression dict
                 out = safe_eval(code, ctx, mode="eval") or {}
@@ -93,7 +95,6 @@ class WebFormBannerRule(models.Model):
                 out = ctx.get("result") or {}
             if not isinstance(out, dict):
                 return {"visible": False}
-            # pull control keys
             visible = out.get("visible", True)
             severity = out.get("severity", severity)
             values = out.get("values", {})
@@ -101,7 +102,6 @@ class WebFormBannerRule(models.Model):
             # convenience: if no explicit `values`, treat other keys as template vars
             if not values:
                 values = {k: v for k, v in out.items() if k not in {"visible", "severity", "values", "html"}}
-
         if not visible:
             return {"visible": False}
         # Render html using template if not provided directly
