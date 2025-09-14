@@ -1,13 +1,21 @@
 # Copyright 2025 Quartile
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+import time
+import datetime as _dt
+from dateutil import parser as _dateparse
+from dateutil.relativedelta import relativedelta as _relativedelta
+from pytz import timezone as _timezone
+
+from functools import lru_cache
 from lxml import etree
 from string import Template
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
 from odoo.tools import html_escape
+from odoo.tools.float_utils import float_compare, float_is_zero, float_round
+from odoo.tools.safe_eval import safe_eval
 
 
 class WebFormBannerRule(models.Model):
@@ -41,21 +49,18 @@ class WebFormBannerRule(models.Model):
         required=True,
     )
     message = fields.Text(
-        help="Template with ${placeholders}. If not HTML, it will be escaped. ",
+        translate=True,
+        help="Template with ${placeholders}. If not HTML, it will be escaped.",
     )
     message_is_html = fields.Boolean(
         "HTML",
         help="If checked, 'message' is treated as raw HTML (no escaping). "
         "If not checked, the rendered text is escaped and newlines become <br/>."
     )
-    # Example return:
-    #   {"visible": True, "severity": "warning", "values": {"title": "..."}, "html": "<b>...</b>"}
     message_value_code = fields.Text(
-        help=(
-            "Python expression evaluated server-side. Must return a dict.\n"
-            "Keys: visible(bool, default True), severity(str), values(dict for ${...} in message),\n"
-            "and/or html(str) to override template rendering."
-        )
+        help="Python expression evaluated server-side. Must return a dict.\n"
+        "Keys: visible(bool, default True), severity(str), values(dict for ${...} in message),\n"
+        "and/or html(str) to override template rendering.",
     )
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
@@ -79,15 +84,38 @@ class WebFormBannerRule(models.Model):
         except Exception:
             return ""
 
-    @api.model
-    def _get_safe_eval_context(self, record):
+    @lru_cache(maxsize=1)
+    def _banner_base_eval_ctx_static(self):
+        # Only static, import-heavy items
         return {
-            "env": self.env,
-            "user": self.env.user,
-            "ctx": dict(self.env.context),
-            "record": record,
-            "url_for": self._build_form_url,
+            "time": time,
+            "datetime": _dt,
+            "dateutil": {
+                "parser": _dateparse,
+                "relativedelta": _relativedelta,
+            },
+            "timezone": _timezone,
         }
+
+    @api.model
+    def _get_banner_eval_context(self, record):
+        eval_ctx = dict(self._banner_base_eval_ctx_static())
+        # add per-request/per-record bits
+        eval_ctx.update(
+            {
+                "env": record.env,
+                "user": record.env.user,
+                "ctx": dict(record.env.context),
+                "model": record.env[record._name],
+                "record": record,
+                "context_today": lambda ts=None: fields.Date.context_today(record, timestamp=ts),
+                "float_compare": float_compare,
+                "float_is_zero": float_is_zero,
+                "float_round": float_round,
+                "url_for": self._build_form_url,
+            }
+        )
+        return eval_ctx
 
     @api.model
     def compute_message(self, rule_id, model, res_id):
@@ -96,7 +124,7 @@ class WebFormBannerRule(models.Model):
         if not rule.exists() or not rule.active:
             return {"visible": False}
         record = self.env[model].browse(int(res_id)) if res_id else self.env[model]
-        ctx = self._get_safe_eval_context(record)
+        eval_ctx = self._get_banner_eval_context(record)
         visible = True
         severity = rule.severity or "danger"
         values = {}
@@ -105,11 +133,11 @@ class WebFormBannerRule(models.Model):
             code = rule.message_value_code.strip()
             try:
                 # 1) try single-expression dict
-                out = safe_eval(code, ctx, mode="eval") or {}
+                out = safe_eval(code, eval_ctx, mode="eval") or {}
             except Exception:
                 # 2) allow multi-line; expect `result` to be set
-                safe_eval(code, ctx, mode="exec", nocopy=True)
-                out = ctx.get("result") or {}
+                safe_eval(code, eval_ctx, mode="exec", nocopy=True)
+                out = eval_ctx.get("result") or {}
             if not isinstance(out, dict):
                 return {"visible": False}
             visible = out.get("visible", True)

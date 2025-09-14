@@ -25,12 +25,12 @@ odoo.define("web_form_banner.save_plus_load", function (require) {
                     $b.find('> span').empty();
                     return;
                 }
-                var sev  = (res.severity || $b.data('default-severity') || 'danger');
-                var html = (res.html || '');
+                var sev  = (res.severity || $b.data("default-severity") || "danger");
+                var html = (res.html || "");
                 // Apply severity class if container uses the new class
-                $b.attr('class', 'o_form_banner alert alert-' + sev);
+                $b.attr("class", "o_form_banner alert alert-" + sev);
                 // Fill either the old <span> child or the container itself
-                var $span = $b.find('> span');
+                var $span = $b.find("> span");
                 if ($span.length) {
                     $span.html(html);
                 } else {

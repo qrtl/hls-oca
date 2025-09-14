@@ -48,8 +48,8 @@
                         </group>
                     </group>
                     <group>
-                        <field name="message" widget="ace" options="{'mode':'xml'}" />
-                        <field name="message_is_html" />
+                        <field name="message" />
+                        <field name="message_is_html" attrs="{'invisible':[('message','=',False)]}" />
                         <field name="message_value_code" widget="ace" options="{'mode':'python'}" />
                     </group>
                 </sheet>
