@@ -1,4 +1,4 @@
-# Copyright 2025 Quartile
+# Copyright 2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import time
@@ -82,7 +82,9 @@ class WebFormBannerRule(models.Model):
         try:
             if not rec or not getattr(rec, "id", None):
                 return ""
-            base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", default="")
+            base = self.env["ir.config_parameter"].sudo().get_param(
+                "web.base.url", default=""
+            )
             return "%s/web#id=%d&model=%s&view_type=form" % (base, rec.id, rec._name)
         except Exception:
             return ""
@@ -110,7 +112,9 @@ class WebFormBannerRule(models.Model):
                 "ctx": dict(record.env.context),
                 "model": record.env[record._name],
                 "record": record,
-                "context_today": lambda ts=None: fields.Date.context_today(record, timestamp=ts),
+                "context_today": lambda ts=None: fields.Date.context_today(
+                    record, timestamp=ts
+                ),
                 "float_compare": float_compare,
                 "float_is_zero": float_is_zero,
                 "float_round": float_round,
