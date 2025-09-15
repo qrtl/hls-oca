@@ -1,7 +1,6 @@
 # Copyright 2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-import re
 from lxml import etree
 
 from odoo.tests.common import SavepointCase, tagged
@@ -14,146 +13,128 @@ class TestFieldsViewGetPartnerBanner(SavepointCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.Partner = cls.env["res.partner"]
-        cls.Rule = cls.env["web.form.banner.rule"].search([
-            ("model_name", "=", "res.partner"),
-            ("active", "=", True),
-        ], limit=1)
-        if not cls.Rule:
+        cls.Rule = cls.env["web.form.banner.rule"]
+        cls.banner_rule = cls.Rule.search(
+            [("model_name", "=", "res.partner")], limit=1,
+        )
+        if not cls.banner_rule:
             raise AssertionError(
                 "Expected a demo web.form.banner.rule for res.partner (active=True) "
                 "but none was found. Ensure demo data is loaded."
             )
-
         cls.partner_form_view = cls.env.ref("base.view_partner_form")
 
-    # ---- helpers ----
+        cls.p_len3 = cls.Partner.create({"name": "Bob"})  # 3
+        cls.p_len12 = cls.Partner.create({"name": "Yoshi Tashiro"})  # 12
+        cls.p_len22 = cls.Partner.create({"name": "Professor Charles Xavier"})  # 22
 
-    def _get_arch_tree_for_partner(self):
-        """Return (arch_str, etree) for partner form with the demo rule applied."""
-        res = self.Partner.fields_view_get(
-            view_id=self.partner_form_view.id,
+    def _get_arch_tree(self, model, view):
+        res = model.fields_view_get(
+            view_id=view.id,
             view_type="form",
             toolbar=False,
             submenu=False,
         )
-        arch = res["arch"]
-        return arch, etree.fromstring(arch)
+        return etree.fromstring(res["arch"])
 
-    def _find_banner_node(self, tree):
-        """Find the injected placeholder node for our rule."""
-        xpath = "//div[@data-rule-id='%s' and contains(@class,'o_form_banner')]" % self.Rule.id
+    def _find_banner_node(self, tree, rule):
+        """Find the injected placeholder node for the rule."""
+        xpath = "//div[@data-rule-id='%s' and contains(@class,'o_form_banner')]" % rule.id
         nodes = tree.xpath(xpath)
         self.assertTrue(nodes, "Expected banner node injected in the form arch.")
         return nodes[0]
 
-    def _code(self):
-        return (self.Rule.message_value_code or "").strip()
+    def _get_sibling_indexes(self):
+        tree = self._get_arch_tree(self.Partner, self.partner_form_view)
+        banner_node = self._find_banner_node(tree, self.banner_rule)
+        targets = tree.xpath(self.banner_rule.target_xpath)
+        self.assertTrue(targets)
+        target = targets[0]
+        parent = target.getparent()
+        self.assertIsNotNone(parent)
+        self.assertIs(parent, banner_node.getparent(), "Banner and sheet should share the same parent")
+        siblings = list(parent)
+        return siblings.index(target), siblings.index(banner_node)
 
-    # ---- tests ----
+    def _code(self, rule):
+        return (rule.message_value_code or "").strip()
 
     def test_injected_once_with_expected_attrs(self):
-        arch, tree = self._get_arch_tree_for_partner()
-        node = self._find_banner_node(tree)
-
+        tree = self._get_arch_tree(self.Partner, self.partner_form_view)
+        banner_node = self._find_banner_node(tree, self.banner_rule)
         # Basic attributes from the server injection
-        # (see web_form_banner/models/ir_model.py)
-        self.assertEqual(node.get("data-model"), "res.partner")
-        self.assertEqual(node.get("data-default-severity"), (self.Rule.severity or "danger"))
-        self.assertEqual(node.get("role"), "alert")
-        self.assertEqual(node.get("style"), "display:none;")
-
+        self.assertEqual(banner_node.get("data-model"), "res.partner")
+        self.assertEqual(
+            banner_node.get("data-default-severity"), (self.banner_rule.severity or "danger")
+        )
+        self.assertEqual(banner_node.get("role"), "alert")
+        self.assertEqual(banner_node.get("style"), "display:none;")
         # Class list includes the expected CSS classes
-        classes = (node.get("class") or "").split()
-        for required in ("o_form_banner", "alert", "alert-%s" % (self.Rule.severity or "danger")):
+        classes = (banner_node.get("class") or "").split()
+        for required in (
+            "o_form_banner", "alert", "alert-%s" % (self.banner_rule.severity or "danger")
+        ):
             self.assertIn(required, classes)
-
         # Ensure it's not duplicated
         all_banners = tree.xpath("//div[contains(@class,'o_form_banner')]")
-        self.assertEqual(
-            len(all_banners), 1,
-            "Expected exactly one banner placeholder to be injected for res.partner"
-        )
+        self.assertEqual(len(all_banners), 1)
 
     def test_position_relative_to_sheet(self):
-        _, tree = self._get_arch_tree_for_partner()
-        node = self._find_banner_node(tree)
-
-        # First visible <sheet> node in the form
-        sheets = tree.xpath("//sheet")
-        self.assertTrue(sheets, "Expected a <sheet> in the partner form view")
-        sheet = sheets[0]
-
-        # Both banner and sheet should share the same parent
-        parent = sheet.getparent()
-        self.assertIsNotNone(parent, "Sheet must have a parent")
-        self.assertIs(parent, node.getparent(), "Banner and sheet should share the same parent")
-
-        siblings = list(parent)
-        i_sheet = siblings.index(sheet)
-        i_node = siblings.index(node)
-
-        pos = (self.Rule.position or "before")
-        if pos == "before":
-            self.assertEqual(
-                i_node, i_sheet - 1,
-                "Banner should be inserted immediately before <sheet> when position='before'"
-            )
-        else:  # 'after'
-            self.assertEqual(
-                i_node, i_sheet + 1,
-                "Banner should be inserted immediately after <sheet> when position='after'"
-            )
+        self.banner_rule.position = "before"
+        i_target, i_banner_node = self._get_sibling_indexes()
+        self.assertEqual(
+            i_banner_node, i_target - 1,
+            "Banner should be inserted immediately before <sheet>"
+        )
+        self.banner_rule.position = "after"
+        i_target, i_banner_node = self._get_sibling_indexes()
+        self.assertEqual(
+            i_banner_node, i_target + 1,
+            "Banner should be inserted immediately after <sheet>"
+        )
 
     def test_not_injected_on_unrelated_model(self):
-        # Sanity: pick a base model without a rule (res.company is present in base)
         Company = self.env["res.company"]
-        # Use the standard company form view
         view = self.env.ref("base.view_company_form")
         res = Company.fields_view_get(view_id=view.id, view_type="form")
         tree = etree.fromstring(res["arch"])
-        self.assertFalse(
-            tree.xpath("//div[contains(@class,'o_form_banner')]"),
-            "No banners should be injected on models without active rules",
-        )
+        self.assertFalse(tree.xpath("//div[contains(@class,'o_form_banner')]"))
 
     def test_contains_expected_messages_and_severities(self):
-        code = self._code()
-        # Messages
-        self.assertRegex(
-            code,
-            r"This partner['’]s name is very long!",
-            "Missing 'very long' message literal in message_value_code",
-        )
-        self.assertRegex(
-            code,
-            r"This partner['’]s name is a bit long\.",
-            "Missing 'bit long' message literal in message_value_code",
-        )
-        # Severities
-        self.assertRegex(code, r"['\"]danger['\"]", "Missing 'danger' severity literal")
-        self.assertRegex(code, r"['\"]warning['\"]", "Missing 'warning' severity literal")
+        code = (self.banner_rule.message_value_code or "").strip()
+        self.assertIn("This partner's name is very long!", code)
+        self.assertIn("This partner's name is a bit long.", code)
+        self.assertRegex(code, r"['\"]danger['\"]", "Missing 'danger' literal")
+        self.assertRegex(code, r"['\"]warning['\"]", "Missing 'warning' literal")
 
-    def test_trims_whitespace_before_length_check(self):
-        code = self._code()
-        # Tolerate different styles, but insist .strip() is used on the name
-        self.assertRegex(code, r"\.strip\(\)", "Expected .strip() usage before length check")
-
-    def test_length_thresholds_present_and_ordered(self):
-        code = self._code()
-        # Accept either `n = len(name)` then `n > X` or inline `len(name) > X`
-        pat20 = re.search(r"(?:\bn\s*>\s*20\b|len\s*\(\s*name\s*\)\s*>\s*20)", code)
-        pat10 = re.search(r"(?:\bn\s*>\s*10\b|len\s*\(\s*name\s*\)\s*>\s*10)", code)
-        self.assertIsNotNone(pat20, "Missing > 20 threshold check")
-        self.assertIsNotNone(pat10, "Missing > 10 threshold check")
-        # Ensure the '> 20' branch is evaluated before '> 10' (so 21+ shows 'danger')
-        self.assertLess(
-            pat20.start(), pat10.start(),
-            "Expected the '> 20' branch to precede the '> 10' branch",
+    def test_banner_visibility_and_content(self):
+        # Short name: no banner
+        out = self.Rule.compute_message(
+            self.banner_rule.id, "res.partner", self.p_len3.id
         )
+        self.assertFalse(out.get("visible"))
+        # Medium name: warning banner
+        out = self.Rule.compute_message(
+            self.banner_rule.id, "res.partner", self.p_len12.id
+        )
+        self.assertTrue(out.get("visible"))
+        self.assertEqual(out.get("severity"), "warning")
+        self.assertIn("bit long", out.get("html", ""))
+        # Long name: danger banner
+        out = self.Rule.compute_message(
+            self.banner_rule.id, "res.partner", self.p_len22.id
+        )
+        self.assertTrue(out.get("visible"))
+        self.assertEqual(out.get("severity"), "danger")
+        self.assertIn("very long", out.get("html", ""))
 
-    def test_result_object_keys_are_declared(self):
-        code = self._code()
-        # Sanity: ensure the code sets a result mapping with common keys
-        self.assertIn("result", code, "Expected a 'result' variable to be assigned")
-        for key in ("visible", "severity", "html"):
-            self.assertIn(key, code, "Expected '%s' key to appear in result dict" % key)
+    def test_inactive_rule_returns_hidden(self):
+        # Flip active off just for this check
+        self.banner_rule.active = False
+        try:
+            out = self.Rule.compute_message(
+                self.banner_rule.id, "res.partner", self.p_len22.id
+            )
+            self.assertFalse(out.get("visible"))
+        finally:
+            self.banner_rule.active = True
