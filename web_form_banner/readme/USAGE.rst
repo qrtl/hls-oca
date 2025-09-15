@@ -59,3 +59,33 @@ Examples:
     "visible": bool(record.validity_date and context_today() > record.validity_date and record.state in ["draft", "sent"]),
     "values": {"validity_date": record.validity_date},
   }
+
+**D) Pending activities on a task (uses env)**
+
+* Model: `project.task`
+* Message: `There are ${cnt} pending activities.`
+* Message Value Code (multi-line with `result`):
+
+.. code-block:: python
+
+  cnt = env["mail.activity"].search_count([("res_model","=",record._name),("res_id","=",record.id)])
+  result = {"visible": cnt > 0, "values": {"cnt": cnt}}
+
+**E) HTML banner linking to the customer's last Sales Order**
+
+* Model: sale.order
+* Message: (leave blank; `html` provided by Message Value Code)
+* Message Value Code (multi-line with `result`):
+
+.. code-block:: python
+
+  last = env["sale.order"].search(
+    [("partner_id", "=", record.partner_id.id), ("id", "<", record.id)],
+    order="date_order desc, id desc",
+    limit=1,
+  )
+  if last:
+    html = "<strong>Previous order:</strong> <a href='%s'>%s</a>" % (url_for(last), last.name)
+    result = {"visible": True, "severity": "info", "html": html}
+  else:
+    result = {"visible": False}
