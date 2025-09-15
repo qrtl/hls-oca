@@ -44,8 +44,8 @@ class WebFormBannerRule(models.Model):
         help="Where to insert the placeholder relative to the first matched node."
     )
     severity = fields.Selection(
-        "Default Severity",
         [("info", "Info"), ("warning", "Warning"), ("danger", "Danger")],
+        string="Default Severity",
         default="danger",
         required=True,
         help="Default severity level, can be overridden per-record.",
@@ -61,8 +61,8 @@ class WebFormBannerRule(models.Model):
     )
     message_value_code = fields.Text(
         help="Python expression evaluated server-side. Must return a dict.\n"
-        "Keys: visible(bool, default True), severity(str), values(dict for ${...} in message),\n"
-        "and/or html(str) to override template rendering.",
+        "Keys: visible(bool, default True), severity(str), values(dict for ${...} in \n"
+        "message), and/or html(str) to override template rendering.",
     )
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)

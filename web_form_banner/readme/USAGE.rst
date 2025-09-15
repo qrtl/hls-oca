@@ -1,6 +1,6 @@
 #. Go to *Settings > Tachnical > User Interface > Form Banner Rules* and create a rule.
-#. Choose Model, (optionally) restrict Form Views, set Severity, Target XPath (insertion point),
-   Position, and configure the message.
+#. Choose Model, (optionally) restrict Form Views, set Default Severity, Target XPath
+   (insertion point), Position, and configure the message.
 #. Save. Open any matching form record—the banner will appear and auto-refresh after
    load/save/reload.
 

@@ -50,8 +50,51 @@
                     <group>
                         <field name="message" />
                         <field name="message_is_html" attrs="{'invisible':[('message','=',False)]}" />
-                        <field name="message_value_code" widget="ace" options="{'mode':'python'}" />
                     </group>
+                    <notebook>
+                        <page string="Message Value Code" name='message_value_code' autofocus="autofocus">
+                            <field
+                                name="message_value_code"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                                placeholder="Enter Python code here. Help about Python expression is available in the help tab."
+                            />
+                        </page>
+                        <page string="Help">
+                            <group>
+                                <div>
+                                    <h3>Help for Message Valude Code</h3>
+                                    <p>Available evaluation context variables are as follows:</p>
+                                    <ul>
+                                        <li><code>env</code>: Odoo environment for ORM access.</li>
+                                        <li><code>user</code>: Current user (<code>env.user</code>).</li>
+                                        <li><code>ctx</code>: Copy of the current context (<code>dict(env.context)</code>).</li>
+                                        <li><code>record</code>: Current record (the form's record).</li>
+                                        <li><code>model</code>: Shortcut to the current model (<code>env[record._name]</code>).</li>
+                                        <li><code>url_for(obj)</code>: Helper that returns a backend form URL for <code>obj</code>.</li>
+                                        <li><code>context_today(ts=None)</code>: User-timezone “today” (date) for reliable date comparisons.</li>
+                                        <li><code>time, datetime</code>: Standard Python time/datetime modules.</li>
+                                        <li> <code>dateutil</code>: <code>{ "parser": dateutil.parser, "relativedelta": dateutil.relativedelta }</code></li>
+                                        <li><code>timezone</code>: <code>pytz.timezone</code> for TZ handling.</li>
+                                        <li><code>float_compare</code>, <code>float_is_zero</code>, <code>float_round</code>: Odoo float utils for precision-safe comparisons/rounding.</li>
+                                    </ul>
+                                    <p>Example of Message Value Code (model: <code>sale.order</code>)</p>
+<code style="white-space: pre-wrap">
+last = env["sale.order"].search(
+  [("partner_id", "=", record.partner_id.id), ("id", "&amp;lt;", record.id)],
+  order="date_order desc, id desc",
+  limit=1,
+)
+if last:
+  html = "&amp;lt;strong&amp;gt;Previous order:&amp;lt;/strong&amp;gt; &amp;lt;a href='%s'&amp;gt;%s&amp;lt;/a&amp;gt;" % (url_for(last), last.name)
+  result = {"visible": True, "html": html}
+else:
+  result = {"visible": False}
+</code>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
