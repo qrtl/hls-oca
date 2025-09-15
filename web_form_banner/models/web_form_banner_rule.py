@@ -2,10 +2,10 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import time
-import datetime as _dt
-from dateutil import parser as _dateparse
-from dateutil.relativedelta import relativedelta as _relativedelta
-from pytz import timezone as _timezone
+import datetime as dt
+from dateutil import parser as dateparse
+from dateutil.relativedelta import relativedelta
+from pytz import timezone
 
 from functools import lru_cache
 from lxml import etree
@@ -94,12 +94,12 @@ class WebFormBannerRule(models.Model):
         # Only static, import-heavy items
         return {
             "time": time,
-            "datetime": _dt,
+            "datetime": dt,
             "dateutil": {
-                "parser": _dateparse,
-                "relativedelta": _relativedelta,
+                "parser": dateparse,
+                "relativedelta": relativedelta,
             },
-            "timezone": _timezone,
+            "timezone": timezone,
         }
 
     @api.model
