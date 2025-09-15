@@ -44,9 +44,11 @@ class WebFormBannerRule(models.Model):
         help="Where to insert the placeholder relative to the first matched node."
     )
     severity = fields.Selection(
+        "Default Severity",
         [("info", "Info"), ("warning", "Warning"), ("danger", "Danger")],
         default="danger",
         required=True,
+        help="Default severity level, can be overridden per-record.",
     )
     message = fields.Text(
         translate=True,
