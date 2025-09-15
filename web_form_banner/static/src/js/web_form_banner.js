@@ -4,8 +4,7 @@ odoo.define("web_form_banner.save_plus_load", function (require) {
     var FormController = require("web.FormController");
 
     function refreshBanners(ctrl) {
-        // Support both old and new placeholders
-        var $banners = ctrl.$('.o_form_view div[role="alert"][data-rule-id], .o_form_view div[role="alert"][data-wfb-rule-id]');
+        var $banners = ctrl.$('.o_form_view div[role="alert"][data-rule-id]');
         var state = ctrl.model.get(ctrl.handle);
         var resId = state && state.res_id;
         if (!resId || !$banners.length) return;
@@ -46,7 +45,6 @@ odoo.define("web_form_banner.save_plus_load", function (require) {
             var p = this._super.apply(this, arguments);
             var self = this;
             return p.then(function () {
-                // one-time fetch when the form first appears
                 refreshBanners(self);
             });
         },
@@ -54,14 +52,12 @@ odoo.define("web_form_banner.save_plus_load", function (require) {
             var p = this._super.apply(this, arguments);
             var self = this;
             return p.then(function () {
-                // fetch again after any programmatic reload
                 refreshBanners(self);
             });
         },
         saveRecord: function () {
             var self = this;
             return this._super.apply(this, arguments).then(function () {
-                // fetch after successful save
                 refreshBanners(self);
             });
         },
