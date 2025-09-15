@@ -28,6 +28,7 @@ class WebFormBannerRule(models.Model):
     model_name = fields.Char(related="model_id.model", store=True, readonly=True)
     view_ids = fields.Many2many(
         "ir.ui.view",
+        string="Views",
         domain="[('type', '=', 'form'), ('model', '=', model_name)]",
         help="Form view where the banner should be injected.",
     )
@@ -102,7 +103,6 @@ class WebFormBannerRule(models.Model):
     @api.model
     def _get_banner_eval_context(self, record):
         eval_ctx = dict(self._banner_base_eval_ctx_static())
-        # add per-request/per-record bits
         eval_ctx.update(
             {
                 "env": record.env,

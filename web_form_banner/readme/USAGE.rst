@@ -110,13 +110,13 @@ It is also possible to use "convenience placeholders" without an explicit `value
 
 **F) HTML banner linking to the customer's last sales order**
 
-* Model: sale.order
+* Model: `sale.order`
 * Message: (leave blank; `html` provided by Message Value Code)
 * Message Value Code (multi-line with `result`):
 
 .. code-block:: python
 
-  last = env["sale.order"].search(
+  last = model.search(
     [("partner_id", "=", record.partner_id.id), ("id", "<", record.id)],
     order="date_order desc, id desc",
     limit=1,

@@ -48,16 +48,22 @@
                         </group>
                     </group>
                     <group>
-                        <field name="message" />
+                        <field
+                            name="message"
+                            placeholder="This is a ${severity} message."
+                        />
                         <field name="message_is_html" attrs="{'invisible':[('message','=',False)]}" />
                     </group>
                     <notebook>
-                        <page string="Message Value Code" name='message_value_code' autofocus="autofocus">
+                        <page
+                            string="Message Value Code"
+                            name="message_value_code"
+                            autofocus="autofocus"
+                        >
                             <field
                                 name="message_value_code"
                                 widget="ace"
                                 options="{'mode': 'python'}"
-                                placeholder="Enter Python code here. Help about Python expression is available in the help tab."
                             />
                         </page>
                         <page string="Help">
@@ -80,7 +86,7 @@
                                     </ul>
                                     <p>Example of Message Value Code (model: <code>sale.order</code>)</p>
 <code style="white-space: pre-wrap">
-last = env["sale.order"].search(
+last = model.search(
   [("partner_id", "=", record.partner_id.id), ("id", "&amp;lt;", record.id)],
   order="date_order desc, id desc",
   limit=1,
