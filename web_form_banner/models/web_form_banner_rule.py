@@ -126,6 +126,8 @@ class WebFormBannerRule(models.Model):
     @api.model
     def compute_message(self, rule_id, model, res_id):
         """Return {visible, severity, html} for the given rule and record."""
+        lang = self._context.get("lang") or self.env.user.lang
+        self = self.with_context(lang=lang)
         rule = self.browse(int(rule_id)).sudo()
         if not rule.exists() or not rule.active:
             return {"visible": False}
