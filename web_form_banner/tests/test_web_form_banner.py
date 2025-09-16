@@ -39,7 +39,7 @@ class TestFieldsViewGetPartnerBanner(SavepointCase):
 
     def _find_banner_node(self, tree, rule):
         """Find the injected placeholder node for the rule."""
-        xpath = "//div[@data-rule-id='%s' and contains(@class,'o_form_banner')]" % rule.id
+        xpath = "//div[@data-rule-id='%s' and contains(@class,'o_form_banner')]" % rule.id  # noqa: E501
         nodes = tree.xpath(xpath)
         self.assertTrue(nodes, "Expected banner node injected in the form arch.")
         return nodes[0]
@@ -52,7 +52,8 @@ class TestFieldsViewGetPartnerBanner(SavepointCase):
         target = targets[0]
         parent = target.getparent()
         self.assertIsNotNone(parent)
-        self.assertIs(parent, banner_node.getparent(), "Banner and sheet should share the same parent")
+        # Banner and sheet should share the same parent
+        self.assertIs(parent, banner_node.getparent())
         siblings = list(parent)
         return siblings.index(target), siblings.index(banner_node)
 
@@ -65,14 +66,14 @@ class TestFieldsViewGetPartnerBanner(SavepointCase):
         # Basic attributes from the server injection
         self.assertEqual(banner_node.get("data-model"), "res.partner")
         self.assertEqual(
-            banner_node.get("data-default-severity"), (self.banner_rule.severity or "danger")
+            banner_node.get("data-default-severity"), self.banner_rule.severity
         )
         self.assertEqual(banner_node.get("role"), "alert")
         self.assertEqual(banner_node.get("style"), "display:none;")
         # Class list includes the expected CSS classes
         classes = (banner_node.get("class") or "").split()
         for required in (
-            "o_form_banner", "alert", "alert-%s" % (self.banner_rule.severity or "danger")
+            "o_form_banner", "alert", "alert-%s" % (self.banner_rule.severity)
         ):
             self.assertIn(required, classes)
         # Ensure it's not duplicated

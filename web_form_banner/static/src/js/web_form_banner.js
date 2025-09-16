@@ -40,26 +40,25 @@ odoo.define("web_form_banner.save_plus_load", function (require) {
         });
     }
 
+    function withRefresh(ctrl, superFn, args) {
+        var p = superFn.apply(ctrl, args);
+        return p.then(function () {
+            refreshBanners(ctrl);
+        });
+    }
+
     FormController.include({
         start: function () {
-            var p = this._super.apply(this, arguments);
-            var self = this;
-            return p.then(function () {
-                refreshBanners(self);
-            });
+            return withRefresh(this, this._super, arguments);
         },
         reload: function () {
-            var p = this._super.apply(this, arguments);
-            var self = this;
-            return p.then(function () {
-                refreshBanners(self);
-            });
+            return withRefresh(this, this._super, arguments);
         },
         saveRecord: function () {
-            var self = this;
-            return this._super.apply(this, arguments).then(function () {
-                refreshBanners(self);
-            });
+            return withRefresh(this, this._super, arguments);
+        },
+        update: function (params, options) {
+            return withRefresh(this, this._super, arguments);
         },
     });
 });

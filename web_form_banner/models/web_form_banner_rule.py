@@ -11,7 +11,7 @@ from functools import lru_cache
 from lxml import etree
 from string import Template
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import html_escape
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
@@ -75,7 +75,7 @@ class WebFormBannerRule(models.Model):
             try:
                 etree.XPath(xp or "//sheet")
             except (etree.XPathSyntaxError, etree.XPathEvalError) as e:
-                raise ValidationError("Invalid XPath:\n%s" % e)
+                raise ValidationError(_("Invalid XPath:\n%s") % e)
 
     @api.model
     def _build_form_url(self, rec):
