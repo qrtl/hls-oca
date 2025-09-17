@@ -99,7 +99,7 @@ msgstr "有効"
 #. module: web_form_banner
 #: selection:web.form.banner.rule,position:0
 msgid "After target"
-msgstr ""
+msgstr "ターゲットの後"
 
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_search
@@ -119,7 +119,7 @@ msgstr "ベース"
 #. module: web_form_banner
 #: selection:web.form.banner.rule,position:0
 msgid "Before target"
-msgstr ""
+msgstr "ターゲットの前"
 
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__create_uid
@@ -134,17 +134,17 @@ msgstr "作成日"
 #. module: web_form_banner
 #: selection:web.form.banner.rule,severity:0
 msgid "Danger"
-msgstr ""
+msgstr "危険"
 
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__severity
 msgid "Default Severity"
-msgstr ""
+msgstr "デフォルト重要度"
 
 #. module: web_form_banner
 #: model:ir.model.fields,help:web_form_banner.field_web_form_banner_rule__severity
 msgid "Default severity level, can be overridden per-record."
-msgstr ""
+msgstr "デフォルト重要度。レコード毎に上書き可"
 
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__display_name
@@ -154,24 +154,24 @@ msgstr "表示名"
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
 msgid "Example of Message Value Code (model: <code>sale.order</code>)"
-msgstr ""
+msgstr "メッセージ値コードの例 (モデル: <code>sale.order</code>)"
 
 #. module: web_form_banner
 #: model:ir.model,name:web_form_banner.model_web_form_banner_rule
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
 msgid "Form Banner Rule"
-msgstr ""
+msgstr "フォームバナー規則"
 
 #. module: web_form_banner
 #: model:ir.actions.act_window,name:web_form_banner.action_web_form_banner_rule
 #: model:ir.ui.menu,name:web_form_banner.menu_web_form_banner_rules
 msgid "Form Banner Rules"
-msgstr ""
+msgstr "フォームバナー規則"
 
 #. module: web_form_banner
 #: model:ir.model.fields,help:web_form_banner.field_web_form_banner_rule__view_ids
 msgid "Form view where the banner should be injected."
-msgstr ""
+msgstr "バナーを表示するフォームビュー"
 
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_search
@@ -181,7 +181,7 @@ msgstr "グループ化"
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__message_is_html
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
@@ -191,7 +191,7 @@ msgstr "ヘルプ"
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
 msgid "Help for Message Valude Code"
-msgstr ""
+msgstr "メッセージ値コードのヘルプ"
 
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__id
@@ -206,14 +206,15 @@ msgstr ""
 #. module: web_form_banner
 #: selection:web.form.banner.rule,severity:0
 msgid "Info"
-msgstr ""
+msgstr "情報"
 
 #. module: web_form_banner
 #: code:addons/web_form_banner/models/web_form_banner_rule.py:78
 #, python-format
 msgid "Invalid XPath:\n"
 "%s"
-msgstr ""
+msgstr "無効なXPath:\n"
+"%s"
 
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule____last_update
@@ -239,7 +240,7 @@ msgstr "メッセージ"
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__message_value_code
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
 msgid "Message Value Code"
-msgstr ""
+msgstr "メッセージ値コード"
 
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__model_id
@@ -256,7 +257,7 @@ msgstr "名称"
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__position
 msgid "Position"
-msgstr ""
+msgstr "位置"
 
 #. module: web_form_banner
 #: model:ir.model.fields,help:web_form_banner.field_web_form_banner_rule__message_value_code
@@ -268,27 +269,27 @@ msgstr ""
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__sequence
 msgid "Sequence"
-msgstr "付番"
+msgstr "順序"
 
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_search
 msgid "Severity"
-msgstr ""
+msgstr "重要度"
 
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__target_xpath
 msgid "Target XPath"
-msgstr ""
+msgstr "ターゲットXPath"
 
 #. module: web_form_banner
 #: model:ir.model.fields,help:web_form_banner.field_web_form_banner_rule__message
 msgid "Template with ${placeholders}. If not HTML, it will be escaped."
-msgstr ""
+msgstr "${placeholders} が使えるテンプレート。HTMLでない場合はエスケープされます。"
 
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
 msgid "This is a ${severity} message."
-msgstr ""
+msgstr "これは ${severity} メッセージです。"
 
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__view_ids
@@ -298,12 +299,12 @@ msgstr "ビュー"
 #. module: web_form_banner
 #: selection:web.form.banner.rule,severity:0
 msgid "Warning"
-msgstr ""
+msgstr "警告"
 
 #. module: web_form_banner
 #: model:ir.model.fields,help:web_form_banner.field_web_form_banner_rule__position
 msgid "Where to insert the placeholder relative to the first matched node."
-msgstr ""
+msgstr "マッチした1つ目のノードへのプレイスホルダーの相対挿入位置"
 
 #. module: web_form_banner
 #: model:ir.model.fields,help:web_form_banner.field_web_form_banner_rule__target_xpath
