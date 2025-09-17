@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-16 12:32+0000\n"
-"PO-Revision-Date: 2025-09-16 12:32+0000\n"
+"POT-Creation-Date: 2025-09-17 16:03+0000\n"
+"PO-Revision-Date: 2025-09-17 16:03+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -38,12 +38,26 @@ msgstr ""
 
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
+msgid "<code>changes</code>: Dict of sanitized draft values coming from the form. Includes only\n"
+"                                        simple field types; many2one values are normalized to an integer id (or <code>False</code>)\n"
+"                                        and unknown/complex fields are omitted. Useful when rule logic needs the raw\n"
+"                                        user-input values regardless of the proxy overrides applied to <code>record</code>."
+msgstr ""
+
+#. module: web_form_banner
+#: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
 msgid "<code>context_today(ts=None)</code>: User-timezone “today” (date) for reliable date comparisons."
 msgstr ""
 
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
 msgid "<code>ctx</code>: Copy of the current context (<code>dict(env.context)</code>)."
+msgstr ""
+
+#. module: web_form_banner
+#: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
+msgid "<code>current_id</code>: Integer id of the record being edited, or <code>False</code> if the form\n"
+"                                        is creating a new record."
 msgstr ""
 
 #. module: web_form_banner
@@ -181,7 +195,7 @@ msgstr "グループ化"
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__message_is_html
 msgid "HTML"
-msgstr "HTML"
+msgstr ""
 
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
@@ -204,12 +218,17 @@ msgid "If checked, 'message' is treated as raw HTML (no escaping). If not checke
 msgstr ""
 
 #. module: web_form_banner
+#: model:ir.model.fields,help:web_form_banner.field_web_form_banner_rule__trigger_field_ids
+msgid "If set, the banner recomputes live when any of these fields change."
+msgstr ""
+
+#. module: web_form_banner
 #: selection:web.form.banner.rule,severity:0
 msgid "Info"
 msgstr "情報"
 
 #. module: web_form_banner
-#: code:addons/web_form_banner/models/web_form_banner_rule.py:78
+#: code:addons/web_form_banner/models/web_form_banner_rule.py:142
 #, python-format
 msgid "Invalid XPath:\n"
 "%s"
@@ -267,9 +286,14 @@ msgid "Python expression evaluated server-side. Must return a dict.\n"
 msgstr ""
 
 #. module: web_form_banner
+#: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
+msgid "Recompute on change (new forms)"
+msgstr ""
+
+#. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__sequence
 msgid "Sequence"
-msgstr "順序"
+msgstr "付番"
 
 #. module: web_form_banner
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_search
@@ -290,6 +314,11 @@ msgstr "${placeholders} が使えるテンプレート。HTMLでない場合は�
 #: model_terms:ir.ui.view,arch_db:web_form_banner.view_web_form_banner_rule_form
 msgid "This is a ${severity} message."
 msgstr "これは ${severity} メッセージです。"
+
+#. module: web_form_banner
+#: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__trigger_field_ids
+msgid "Trigger Fields"
+msgstr "トリガ項目"
 
 #. module: web_form_banner
 #: model:ir.model.fields,field_description:web_form_banner.field_web_form_banner_rule__view_ids
