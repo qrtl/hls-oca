@@ -67,6 +67,13 @@ class WebFormBannerRule(models.Model):
     )
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
+    trigger_field_ids = fields.Many2many(
+        "ir.model.fields",
+        "web_form_banner_rule_trigger_field_rel",
+        domain="[('model', '=', model_name)]",
+        string="Trigger Fields",
+        help="If set, the banner recomputes live when any of these fields change.",
+    )
 
     @api.constrains("target_xpath")
     def _check_target_xpath(self):
@@ -90,7 +97,7 @@ class WebFormBannerRule(models.Model):
             return ""
 
     @lru_cache(maxsize=1)
-    def _banner_base_eval_ctx_static(self):
+    def _get_base_eval_ctx_static(self):
         # Only static, import-heavy items
         return {
             "time": time,
@@ -106,8 +113,8 @@ class WebFormBannerRule(models.Model):
         }
 
     @api.model
-    def _get_banner_eval_context(self, record):
-        eval_ctx = dict(self._banner_base_eval_ctx_static())
+    def _get_eval_context(self, record):
+        eval_ctx = dict(self._get_base_eval_ctx_static())
         eval_ctx.update(
             {
                 "env": record.env,
@@ -124,52 +131,118 @@ class WebFormBannerRule(models.Model):
         return eval_ctx
 
     @api.model
-    def compute_message(self, rule_id, model, res_id):
+    def _sanitize_draft(self, model, form_vals):
+        """Return a sanitized dict of simple field values safe for new()/eval."""
+        flds = self.env[model]._fields
+
+        def _san(name, v):
+            f = flds.get(name)
+            if not f:
+                return None
+            if f.type == "many2one":
+                if isinstance(v, int):
+                    return v
+                if isinstance(v, (list, tuple)) and v and isinstance(v[0], int):
+                    return v[0]
+                if isinstance(v, dict):
+                    return v.get("res_id") or (v.get("data") or {}).get("id") or \
+                        v.get("id") or v.get("ref") or False
+                return False
+            if f.type in (
+                "char",
+                "text",
+                "html",
+                "selection",
+                "boolean",
+                "integer",
+                "float",
+                "monetary",
+                "date",
+                "datetime",
+            ):
+                return v
+            return None  # skip x2many/reference/others
+
+        out = {}
+        for n, v in (form_vals or {}).items():
+            sv = _san(n, v)
+            if sv is not None:
+                out[n] = sv
+        return out
+
+    @api.model
+    def _build_eval_record(self, model, res_id, vals):
+        """Build the record used for evaluation.
+        - existing record: wrap with overrides but keep real id
+        - new record: new(vals)
+        """
+        if not res_id:
+            return self.env[model].new(vals) if vals else self.env[model]
+        base = self.env[model].browse(int(res_id))
+        if not vals:
+            return base
+        flds = self.env[model]._fields
+        ovr = {}
+        for n, v in vals.items():
+            f = flds[n]
+            if f.type == "many2one" and isinstance(v, int):
+                ovr[n] = self.env[f.comodel_name].browse(v)
+            else:
+                ovr[n] = v
+        class _Proxy(object):
+            def __init__(self, b, o): self._b, self._o = b, o
+            def __getattr__(self, name): return self._o.get(name, getattr(self._b, name))
+            @property
+            def id(self): return self._b.id
+        return _Proxy(base, ovr)
+
+    @api.model
+    def _run_rule_code(self, rule, eval_ctx):
+        """Execute message_value_code and return a dict or {}."""
+        if not rule.message_value_code:
+            return {}
+        code = rule.message_value_code.strip()
+        try:
+            out = safe_eval(code, eval_ctx, mode="eval") or {}
+        except Exception:
+            safe_eval(code, eval_ctx, mode="exec", nocopy=True)
+            out = eval_ctx.get("result") or {}
+        return out if isinstance(out, dict) else {}
+
+    @api.model
+    def _render_html(self, rule, values, html):
+        """Render final HTML from template if not already provided."""
+        if html:
+            return html
+        tpl = Template(rule.message or "")
+        try:
+            rendered = tpl.safe_substitute(values)
+        except Exception:
+            rendered = rule.message or ""
+        return rendered if rule.message_is_html else html_escape(rendered).replace("\n", "<br/>")
+
+    @api.model
+    def compute_message(self, rule_id, model, res_id, form_vals=None):
         """Return {visible, severity, html} for the given rule and record."""
         lang = self._context.get("lang") or self.env.user.lang
         self = self.with_context(lang=lang)
         rule = self.browse(int(rule_id)).sudo()
         if not rule.exists() or not rule.active:
             return {"visible": False}
-        record = self.env[model].browse(int(res_id)) if res_id else self.env[model]
-        eval_ctx = self._get_banner_eval_context(record)
-        visible = True
-        severity = rule.severity or "danger"
-        values = {}
-        html = None
-        if rule.message_value_code:
-            code = rule.message_value_code.strip()
-            try:
-                # 1) try single-expression dict
-                out = safe_eval(code, eval_ctx, mode="eval") or {}
-            except Exception:
-                # 2) allow multi-line; expect `result` to be set
-                safe_eval(code, eval_ctx, mode="exec", nocopy=True)
-                out = eval_ctx.get("result") or {}
-            if not isinstance(out, dict):
-                return {"visible": False}
-            visible = out.get("visible", True)
-            severity = out.get("severity", severity)
-            values = out.get("values", {})
-            html = out.get("html")
-            # If no explicit `values`, treat other keys as template vars
-            if not values:
-                values = {
-                    k: v for k, v in out.items() if k not in {
-                        "visible", "severity", "values", "html"
-                    }
-                }
+        vals = self._sanitize_draft(model, form_vals)
+        record = self._build_eval_record(model, res_id, vals)
+        eval_ctx = self._get_eval_context(record)
+        # expose changes for rule code that wants direct access to raw values
+        eval_ctx.update(
+            {"changes": vals, "current_id": int(res_id) if res_id else False}
+        )
+        out = self._run_rule_code(rule, eval_ctx) or {}
+        severity = out.get("severity", rule.severity or "danger")
+        visible  = out.get("visible", True)  # default True like before
         if not visible:
             return {"visible": False}
-        # Render html using template if not provided directly
-        if not html:
-            tpl = Template(rule.message or "")
-            try:
-                rendered = tpl.safe_substitute(values)
-            except Exception:
-                rendered = rule.message or ""
-            if rule.message_is_html:
-                html = rendered
-            else:
-                html = html_escape(rendered).replace("\n", "<br/>")
+        values = out.get("values") or {
+            k: v for k, v in out.items() if k not in {"visible", "severity", "values", "html"}
+        }
+        html = self._render_html(rule, values, out.get("html"))
         return {"visible": True, "severity": severity, "html": html}

@@ -49,6 +49,7 @@ class Base(models.AbstractModel):
                     "data-rule-id": str(rule.id),
                     "data-model": self._name,
                     "data-default-severity": (rule.severity or "danger"),
+                    "data-trigger-fields": ",".join(rule.trigger_field_ids.mapped("name")) if getattr(rule, "trigger_field_ids", False) else "",
                     "style": "display:none;",
                 },
             )

@@ -39,6 +39,13 @@
                         <group>
                             <field name="model_id" options="{'no_create':True}" />
                             <field name="model_name" invisible="1" />
+                            <field
+                                name="trigger_field_ids"
+                                widget="many2many_tags"
+                                context="{'active_test': False}"
+                                options="{'no_create': True}"
+                                placeholder="Recompute on change (new forms)"
+                            />
                             <field name="severity" />
                         </group>
                         <group>
