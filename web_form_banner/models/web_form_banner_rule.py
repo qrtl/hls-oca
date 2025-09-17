@@ -1,21 +1,78 @@
 # Copyright 2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+import logging
 import time
 import datetime as dt
+from functools import lru_cache
+from string import Template
+
 from dateutil import parser as dateparse
 from dateutil.relativedelta import relativedelta
-from pytz import timezone
-
-from functools import lru_cache
 from lxml import etree
-from string import Template
+from pytz import timezone
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import html_escape
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 from odoo.tools.safe_eval import safe_eval
+
+_logger = logging.getLogger(__name__)
+
+
+class _EvalRecordProxy:
+    """Read-only-ish view of an existing record with field overrides."""
+    __slots__ = ("_b", "_o")
+
+    def __init__(self, base, overrides):
+        self._b = base
+        self._o = overrides
+
+    def __getattr__(self, name):
+        # Prefer explicit overrides; otherwise fall back to the base record
+        if name in self._o:
+            return self._o[name]
+        return getattr(self._b, name)
+
+    def __repr__(self):
+        return f"<_EvalRecordProxy base={self._b} overrides={list(self._o.keys())}>"
+
+    @property
+    def id(self):
+        # Keep the real DB id for RPCs / URL building / permissions
+        return self._b.id
+
+
+_SIMPLE_FIELD_TYPES = frozenset(
+    {
+        "char", "text", "html", "selection", "boolean",
+        "integer", "float", "monetary", "date", "datetime",
+    }
+)
+
+def _extract_m2o_id(v):
+    """Normalize many2one values to an integer id or False.
+    Accepts: int, (id, ...) tuple/list, or dict with id-ish keys.
+    """
+    if isinstance(v, int):
+        return v
+    if isinstance(v, (list, tuple)) and v and isinstance(v[0], int):
+        return v[0]
+    if isinstance(v, dict):
+        data = v.get("data") or {}
+        return v.get("res_id") or data.get("id") or v.get("id") or v.get("ref") or False
+    return False
+
+def _sanitize_field(field, value):
+    """Return sanitized value for a single field, or None to skip."""
+    if not field:
+        return None
+    if field.type == "many2one":
+        return _extract_m2o_id(value)
+    if field.type in _SIMPLE_FIELD_TYPES:
+        return value
+    return None  # skip x2many/reference/others
 
 
 class WebFormBannerRule(models.Model):
@@ -94,10 +151,11 @@ class WebFormBannerRule(models.Model):
             )
             return "%s/web#id=%d&model=%s&view_type=form" % (base, rec.id, rec._name)
         except Exception:
+            _logger.exception("Failed building form URL for %s", rec)
             return ""
 
     @lru_cache(maxsize=1)
-    def _get_base_eval_ctx_static(self):
+    def _base_eval_ctx_static(self):
         # Only static, import-heavy items
         return {
             "time": time,
@@ -114,7 +172,7 @@ class WebFormBannerRule(models.Model):
 
     @api.model
     def _get_eval_context(self, record):
-        eval_ctx = dict(self._get_base_eval_ctx_static())
+        eval_ctx = dict(self._base_eval_ctx_static())
         eval_ctx.update(
             {
                 "env": record.env,
@@ -134,40 +192,11 @@ class WebFormBannerRule(models.Model):
     def _sanitize_draft(self, model, form_vals):
         """Return a sanitized dict of simple field values safe for new()/eval."""
         flds = self.env[model]._fields
-
-        def _san(name, v):
-            f = flds.get(name)
-            if not f:
-                return None
-            if f.type == "many2one":
-                if isinstance(v, int):
-                    return v
-                if isinstance(v, (list, tuple)) and v and isinstance(v[0], int):
-                    return v[0]
-                if isinstance(v, dict):
-                    return v.get("res_id") or (v.get("data") or {}).get("id") or \
-                        v.get("id") or v.get("ref") or False
-                return False
-            if f.type in (
-                "char",
-                "text",
-                "html",
-                "selection",
-                "boolean",
-                "integer",
-                "float",
-                "monetary",
-                "date",
-                "datetime",
-            ):
-                return v
-            return None  # skip x2many/reference/others
-
         out = {}
-        for n, v in (form_vals or {}).items():
-            sv = _san(n, v)
+        for name, value in (form_vals or {}).items():
+            sv = _sanitize_field(flds.get(name), value)
             if sv is not None:
-                out[n] = sv
+                out[name] = sv
         return out
 
     @api.model
@@ -185,16 +214,13 @@ class WebFormBannerRule(models.Model):
         ovr = {}
         for n, v in vals.items():
             f = flds[n]
+            if not f:
+                continue
             if f.type == "many2one" and isinstance(v, int):
                 ovr[n] = self.env[f.comodel_name].browse(v)
             else:
                 ovr[n] = v
-        class _Proxy(object):
-            def __init__(self, b, o): self._b, self._o = b, o
-            def __getattr__(self, name): return self._o.get(name, getattr(self._b, name))
-            @property
-            def id(self): return self._b.id
-        return _Proxy(base, ovr)
+        return _EvalRecordProxy(base, ovr)
 
     @api.model
     def _run_rule_code(self, rule, eval_ctx):
@@ -219,7 +245,9 @@ class WebFormBannerRule(models.Model):
             rendered = tpl.safe_substitute(values)
         except Exception:
             rendered = rule.message or ""
-        return rendered if rule.message_is_html else html_escape(rendered).replace("\n", "<br/>")
+        if rule.message_is_html:
+            return rendered
+        return html_escape(rendered).replace("\n", "<br/>")
 
     @api.model
     def compute_message(self, rule_id, model, res_id, form_vals=None):
