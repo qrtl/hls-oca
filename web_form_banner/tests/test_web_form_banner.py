@@ -139,3 +139,18 @@ class TestFieldsViewGetPartnerBanner(SavepointCase):
             self.assertFalse(out.get("visible"))
         finally:
             self.banner_rule.active = True
+
+    def test_compute_message_with_unsaved_changes(self):
+        """Server must evaluate using form_vals (unsaved draft) when provided."""
+        out = self.Rule.compute_message(
+            self.banner_rule.id, "res.partner", self.p_len3.id
+        )
+        self.assertFalse(out.get("visible"), "Short name should not show banner")
+        # Pretend user typed a long name but hasn't saved yet
+        form_vals = {"name": "Professor XXXXXXXXX"}
+        out = self.Rule.compute_message(
+            self.banner_rule.id, "res.partner", self.p_len3.id, form_vals=form_vals
+        )
+        self.assertTrue(out.get("visible"), "Unsaved long name should show banner")
+        self.assertEqual(out.get("severity"), "warning")
+        self.assertIn("bit long", out.get("html", ""))

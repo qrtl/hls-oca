@@ -51,6 +51,7 @@ _SIMPLE_FIELD_TYPES = frozenset(
     }
 )
 
+
 def _extract_m2o_id(v):
     """Normalize many2one values to an integer id or False.
     Accepts: int, (id, ...) tuple/list, or dict with id-ish keys.
@@ -63,6 +64,7 @@ def _extract_m2o_id(v):
         data = v.get("data") or {}
         return v.get("res_id") or data.get("id") or v.get("id") or v.get("ref") or False
     return False
+
 
 def _sanitize_field(field, value):
     """Return sanitized value for a single field, or None to skip."""
@@ -266,11 +268,12 @@ class WebFormBannerRule(models.Model):
         )
         out = self._run_rule_code(rule, eval_ctx) or {}
         severity = out.get("severity", rule.severity or "danger")
-        visible  = out.get("visible", True)  # default True like before
+        visible = out.get("visible", True)  # default True like before
         if not visible:
             return {"visible": False}
         values = out.get("values") or {
-            k: v for k, v in out.items() if k not in {"visible", "severity", "values", "html"}
+            k: v for k, v in out.items()
+            if k not in {"visible", "severity", "values", "html"}
         }
         html = self._render_html(rule, values, out.get("html"))
         return {"visible": True, "severity": severity, "html": html}
