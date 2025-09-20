@@ -8,6 +8,7 @@
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="model_id" />
+                <field name="trigger_field_ids" widget="many2many_tags" />
                 <field name="view_ids" widget="many2many_tags" />
                 <field name="severity"/>
                 <field name="target_xpath"/>
@@ -127,12 +128,18 @@ else:
             <search>
                 <field name="name" />
                 <field name="model_id" />
+                <field
+                    name="trigger_field_ids"
+                    filter_domain="['|',('trigger_field_ids.name','ilike',self),('trigger_field_ids.field_description','ilike',self)]"
+                />
                 <field name="severity" />
+                <field name="message" />
+                <field name="message_value_code" />
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active','=',False)]" />
                 <group expand="1" string="Group By">
                     <filter string="Model" name="model" context="{'group_by':'model_id'}" />
-                    <filter string="Severity" name="severity" context="{'group_by':'severity'}" />
+                    <filter string="Default Severity" name="severity" context="{'group_by':'severity'}" />
                 </group>
             </search>
         </field>

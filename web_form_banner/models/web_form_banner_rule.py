@@ -180,7 +180,7 @@ class WebFormBannerRule(models.Model):
 
     @api.model
     def _build_eval_record(self, model, res_id, vals):
-        """Return (draft_record, record_id, persisted_record)."""
+        """Return (draft, persisted, record_id) for eval context."""
         Model = self.env[model]
         vals = vals or {}
         if res_id:
@@ -227,7 +227,6 @@ class WebFormBannerRule(models.Model):
         if not rule.exists() or not rule.active:
             return {"visible": False}
         values = self._sanitize_values(model, form_vals)
-        # record, current_id = self._build_eval_record(model, res_id, vals)
         draft, record, record_id = self._build_eval_record(model, res_id, values)
         eval_ctx = self._get_eval_context(record)
         eval_ctx.update(
