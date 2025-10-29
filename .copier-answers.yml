@@ -22,6 +22,6 @@ repo_description: ''
 repo_name: HLS OCA
 repo_slug: hls-oca
 repo_website: ''
-use_pyproject_toml: false
+use_pyproject_toml: true
 use_ruff: true
 
