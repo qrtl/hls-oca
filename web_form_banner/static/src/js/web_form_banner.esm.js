@@ -1,17 +1,18 @@
-/** @odoo-module **/
 // Copyright 2025 Quartile (https://www.quartile.co)
 // License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-import {patch} from "@web/core/utils/patch";
 import {onMounted, onWillUnmount} from "@odoo/owl";
 import {FormController} from "@web/views/form/form_controller";
 import {Record} from "@web/model/relational_model/record";
+import {patch} from "@web/core/utils/patch";
 
 const recRoot = (c) => (c && c.model && c.model.root) || null;
 const childSpan = (el) => {
     try {
         return (el && el.querySelector(":scope > span")) || null;
-    } catch {}
+    } catch {
+        // Ignore
+    }
     const f = el && el.firstElementChild;
     return f && f.tagName === "SPAN" ? f : null;
 };
@@ -22,10 +23,13 @@ const setHtml = (el, html) => {
 const safe = async (fn, fb) => {
     try {
         return await fn();
-    } catch {}
+    } catch {
+        // Ignore
+    }
     return fb;
 };
 
+/* eslint-disable no-inline-comments */
 function normalizeValue(v) {
     if (v === null || v === undefined) return v; // Null/undefined
     const t = typeof v;
@@ -77,7 +81,7 @@ async function refreshBanners(ctrl, extraChanges) {
     if (!nodes.length) return;
     const snap = {...shrink(rec.data), ...shrink(extraChanges)};
     const names = triggerNames(ctrl);
-    const vals = !rec.resId ? snap : names.length ? sliceBy(snap, names) : {};
+    const vals = rec.resId ? (names.length ? sliceBy(snap, names) : {}) : snap;
     const orm = ctrl.env.services.orm;
     for (const el of nodes) {
         const ruleId = parseInt(el.dataset.ruleId, 10);
@@ -98,7 +102,10 @@ async function refreshBanners(ctrl, extraChanges) {
 function scheduleRefresh(ctrl) {
     if (ctrl.__wfbSched) return;
     ctrl.__wfbSched = true;
-    requestAnimationFrame(() => ((ctrl.__wfbSched = false), refreshBanners(ctrl)));
+    requestAnimationFrame(() => {
+        ctrl.__wfbSched = false;
+        refreshBanners(ctrl);
+    });
 }
 
 function tick(ctrl) {
@@ -164,7 +171,9 @@ patch(Record.prototype, {
                 const ctrl = this.model.__controller;
                 if (ctrl) tick(ctrl);
             }
-        } catch {}
+        } catch {
+            // Ignore
+        }
         return res;
     },
 });
