@@ -1,0 +1,83 @@
+<odoo>
+    <template
+        id="report_invoice_document_inherit_title"
+        inherit_id="account.report_invoice_document"
+    >
+        <xpath expr="//t[@t-set='layout_document_title']" position="after">
+            <t
+                t-if="o.move_type in ('out_invoice', 'out_refund') and o.state == 'posted'"
+            >
+                <t
+                    t-if="delivery_slip_template or o.company_id.invoice_report_pdf_title"
+                >
+                    <t t-set="layout_document_title">
+                        <span t-if="not proforma" />
+                        <span t-else="">PROFORMA</span>
+                        <span t-if="delivery_slip_template">納品書</span>
+                        <span
+                            t-elif="o.company_id.invoice_report_pdf_title"
+                            t-esc="o.company_id.invoice_report_pdf_title"
+                        />
+                        <span t-field="o.name" />
+                    </t>
+                </t>
+            </t>
+        </xpath>
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+            <attribute name="t-attf-class">
+                text-end
+                {{ ' d-none d-md-table-cell'
+                if report_type == 'html' or delivery_slip_template
+                else '' }}
+            </attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_taxes']" position="attributes">
+            <attribute name="t-if">not delivery_slip_template</attribute>
+        </xpath>
+    </template>
+
+    <template
+        id="document_tax_totals_template_delivery_inherit"
+        inherit_id="account.document_tax_totals_template"
+    >
+        <xpath
+            expr="//t[@t-foreach=&quot;subtotal['tax_groups']&quot;]/tr"
+            position="attributes"
+        >
+            <attribute name="t-if">not delivery_slip_template</attribute>
+        </xpath>
+        <xpath
+            expr="//tr[@t-if=&quot;'cash_rounding_base_amount_currency' in tax_totals&quot;]"
+            position="attributes"
+        >
+            <attribute name="t-if">
+                not delivery_slip_template and
+                'cash_rounding_base_amount_currency' in tax_totals
+            </attribute>
+        </xpath>
+        <xpath expr="//tr[hasclass('o_total')]" position="attributes">
+            <attribute name="t-if">not delivery_slip_template</attribute>
+        </xpath>
+    </template>
+
+    <template
+        id="document_tax_totals_company_currency_template_delivery_inherit"
+        inherit_id="account.document_tax_totals_company_currency_template"
+    >
+        <xpath
+            expr="//p[hasclass('tax_computation_company_currency')]"
+            position="attributes"
+        >
+            <attribute name="t-if">not delivery_slip_template</attribute>
+        </xpath>
+        <xpath
+            expr="//t[@t-foreach=&quot;subtotal['tax_groups']&quot;]/tr"
+            position="attributes"
+        >
+            <attribute name="t-if">not delivery_slip_template</attribute>
+        </xpath>
+        <xpath expr="//tr[hasclass('o_total')]" position="attributes">
+            <attribute name="t-if">not delivery_slip_template</attribute>
+        </xpath>
+    </template>
+</odoo>
