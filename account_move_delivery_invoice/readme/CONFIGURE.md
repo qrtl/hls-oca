@@ -1,5 +1,8 @@
-To show the dynamic title on posted invoice reports:
+Go to *Invoicing → Configuration → Settings*:
 
-- Go to *Invoicing → Configuration → Settings*.
-- Set a value in **Invoice Report (PDF) Title**. The default is
-  "納品書兼請求書". If no value is provided, the standard title will be used.
+- **Invoice Report (PDF) Titles**: Configure custom titles for invoice-related PDF
+  reports. Standard titles are used if left blank.
+- **Use Delivery Note Comment**: Enable the delivery note comment field on invoices
+  and credit notes (enabled by default).
+- **Hide Narration on Delivery Note**: Hide the standard invoice narration (terms and
+  conditions) on delivery note and return slip PDFs (enabled by default).

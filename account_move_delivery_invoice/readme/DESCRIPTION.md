@@ -1,4 +1,5 @@
-This module adds a new report (納品書) in invoices. The report uses the same
-content as the standard invoice report but displays a custom title and omits
-all tax information. This module also allows configuring a dynamic title for
-posted invoice reports.
+This module adds a Delivery Note report (納品書) to invoices. The report displays
+the same content as the standard invoice but with a custom title and no tax information.
+
+Configurable report titles are available for invoices, credit notes, delivery notes,
+and return slips.

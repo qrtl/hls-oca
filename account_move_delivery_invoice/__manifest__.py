@@ -10,10 +10,12 @@
     "website": "https://github.com/OCA/l10n-japan",
     "category": "Accounting",
     "data": [
+        "views/account_move_views.xml",
         "views/res_config_settings_views.xml",
-        "report/report_delivery_slip_template.xml",
-        "report/report_delivery_slip.xml",
+        "report/report_delivery_note_template.xml",
+        "report/report_delivery_note.xml",
         "report/report_invoice_document.xml",
     ],
+    "maintainers": ["yostashiro", "aungkokolin1997"],
     "installable": True,
 }
