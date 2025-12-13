@@ -23,9 +23,9 @@ Available options:
 
 Hide the separate **Second Qty** column in reports.
 
-- When enabled, the **Second Qty** column is hidden in reports. The secondary quantity
-  can still be shown in the main **Qty** column depending on the selected price display
-  policy above.
+- When enabled, the **Second Qty** column is hidden in reports. The
+  secondary quantity can still be shown in the main **Qty** column
+  depending on the selected price display policy above.
 - Apply the setting per document type:
   - **Sales**
   - **Purchase**
