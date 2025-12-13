@@ -225,3 +225,33 @@ class TestProductSecondaryUnit(BaseCommon):
         picking.action_confirm()
         self.assertEqual(len(picking.move_ids), 1)
         self.assertEqual(picking.move_ids.secondary_uom_qty, 2)
+
+    def test_stock_quant_secondary_uom_qty(self):
+        quant_product = self.env["product.product"].create(
+            {
+                "name": "test",
+                "uom_id": self.product_uom_unit.id,
+                "is_storable": True,
+                "secondary_uom_ids": [
+                    Command.create(
+                        {
+                            "code": "T",
+                            "name": "unit-2",
+                            "uom_id": self.product_uom_unit.id,
+                            "factor": 0.5,
+                        },
+                    ),
+                ],
+            }
+        )
+        quant_product.stock_secondary_uom_id = quant_product.secondary_uom_ids[0]
+        quant = self.env["stock.quant"].create(
+            {
+                "location_id": self.location_stock.id,
+                "product_id": quant_product.id,
+                "inventory_quantity": 10,
+            }
+        )
+        quant.action_apply_inventory()
+        self.assertEqual(quant.secondary_uom_id, quant_product.secondary_uom_ids[0])
+        self.assertEqual(quant.secondary_uom_qty, 20)
