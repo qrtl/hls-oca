@@ -11,6 +11,8 @@ class AccountMove(models.Model):
     def _compute_partner_bank_id(self):
         super()._compute_partner_bank_id()
         for move in self:
+            if not move.is_inbound():
+                continue
             bank = move.company_id.bank_account_source_ids.get_bank_for_record(move)
             if bank:
                 move.partner_bank_id = bank
