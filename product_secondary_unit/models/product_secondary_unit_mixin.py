@@ -72,6 +72,14 @@ class ProductSecondaryUnitMixin(models.AbstractModel):
             return []
         return [self._secondary_unit_fields["qty_field"]]
 
+    @api.model
+    def _calc_secondary_uom_qty(self, factor, qty, secondary_uom):
+        # Intended to be called from other operations if needed.
+        return float_round(
+            qty / (factor or 1.0),
+            precision_rounding=secondary_uom.uom_id.rounding,
+        )
+
     @api.depends(lambda x: x._get_secondary_uom_qty_depends())
     def _compute_secondary_uom_qty(self):
         for line in self:
@@ -82,10 +90,7 @@ class ProductSecondaryUnitMixin(models.AbstractModel):
                 continue
             factor = line._get_factor_line()
             qty_line = line._get_quantity_from_line()
-            qty = float_round(
-                qty_line / (factor or 1.0),
-                precision_rounding=line.secondary_uom_id.uom_id.rounding,
-            )
+            qty = self._calc_secondary_uom_qty(factor, qty_line, line.secondary_uom_id)
             line.secondary_uom_qty = qty
 
     def _get_default_value_for_qty_field(self):
