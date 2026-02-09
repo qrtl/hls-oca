@@ -12,6 +12,10 @@
     "application": False,
     "installable": True,
     "depends": ["product"],
-    "data": ["security/ir.model.access.csv", "views/product_views.xml"],
+    "data": [
+        "security/ir.model.access.csv",
+        "views/product_views.xml",
+        "views/res_config_settings_views.xml",
+    ],
     "maintainers": ["sergio-teruel"],
 }

@@ -15,14 +15,13 @@ class TestProductSecondaryUnitMixin(TransactionCase, FakeModelLoader):
         from .models import SecondaryUnitFake
 
         cls.loader.update_registry((SecondaryUnitFake,))
-        cls.product_uom_kg = cls.env.ref("uom.product_uom_kgm")
         cls.product_uom_unit = cls.env.ref("uom.product_uom_unit")
         cls.product_uom_dozen = cls.env.ref("uom.product_uom_dozen")
         cls.product_template = cls.env["product.template"].create(
             {
                 "name": "test",
-                "uom_id": cls.product_uom_kg.id,
-                "uom_po_id": cls.product_uom_kg.id,
+                "uom_id": cls.product_uom_unit.id,
+                "uom_po_id": cls.product_uom_unit.id,
                 "secondary_uom_ids": [
                     Command.create(
                         {
