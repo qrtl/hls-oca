@@ -8,6 +8,7 @@
             <field name="product_uom_id" position="after">
                 <field
                     name="secondary_uom_qty"
+                    readonly="1"
                     groups="uom.group_uom"
                     optional="show"
                 />
@@ -23,6 +24,7 @@
             <field name="product_uom_id" position="after">
                 <field
                     name="secondary_uom_qty"
+                    readonly="1"
                     sum="Total Secondary Quantity"
                     groups="uom.group_uom"
                     optional="show"

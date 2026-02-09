@@ -11,10 +11,9 @@ class StockQuant(models.Model):
 
     secondary_uom_id = fields.Many2one(
         related="product_id.stock_secondary_uom_id",
+        store=True,
     )
 
     @api.model
     def _get_secondary_uom_qty_depends(self):
-        return super()._get_secondary_uom_qty_depends() + [
-            "product_id.stock_secondary_uom_id"
-        ]
+        return super()._get_secondary_uom_qty_depends() + ["secondary_uom_id"]

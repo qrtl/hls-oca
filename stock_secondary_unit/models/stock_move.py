@@ -59,14 +59,10 @@ class StockMove(models.Model):
         )
         if not move or move.secondary_uom_id.dependency_type == "independent":
             return vals_list
-        # Assume the move and move line use the same UoM when lots/serials
-        # are generated.
-        factor = move._get_factor_line()
         for vals in vals_list:
-            qty = self._calc_secondary_uom_qty(
-                factor, vals["quantity"], move.secondary_uom_id
+            vals["secondary_uom_qty"] = move._convert_qty_to_secondary_uom(
+                vals["quantity"]
             )
-            vals["secondary_uom_qty"] = qty
             vals["secondary_uom_id"] = {
                 "id": move.secondary_uom_id.id,
                 "display_name": move.secondary_uom_id.display_name,
