@@ -15,7 +15,7 @@
                     <field
                         name="secondary_uom_qty"
                         class="oe_inline oe_no_button"
-                        attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"
+                        readonly="state in ['done', 'cancel']"
                     />
                     <field
                         name="secondary_uom_id"
@@ -26,6 +26,11 @@
                         options="{'no_create': True}"
                         readonly="state in ['purchase','done', 'cancel']"
                         required="secondary_uom_qty != 0.0"
+                    />
+                    <field
+                        name="secondary_uom_price"
+                        class="oe_inline"
+                        invisible="not secondary_uom_id"
                     />
                 </t>
             </xpath>
@@ -49,6 +54,11 @@
                     required="secondary_uom_qty != 0.0"
                     groups="uom.group_uom"
                     optional="show"
+                />
+                <field
+                    name="secondary_uom_price"
+                    groups="uom.group_uom"
+                    optional="hide"
                 />
             </xpath>
         </field>
