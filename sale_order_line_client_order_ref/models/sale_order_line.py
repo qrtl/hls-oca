@@ -35,7 +35,7 @@ class SaleOrderLine(models.Model):
             self.client_order_ref
             and self.company_id.client_order_ref_in_invoice_line_desc
         ):
-            res["name"] = (
-                f"[{_('Customer Order Ref:')} {self.client_order_ref}]\n{res['name']}"
-            )
+            self_lang = self.with_context(lang=self.order_id.partner_invoice_id.lang)
+            label = self_lang.env._("Customer Order Ref:")
+            res["name"] = f"[{label} {self.client_order_ref}]\n{res['name']}"
         return res
