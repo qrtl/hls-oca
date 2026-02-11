@@ -1,0 +1,7 @@
+- Jordi Ballester Alomar \<<jordi.ballester@forgeflow.com>\>
+- [Tecnativa](https://www.tecnativa.com):
+  - Ernesto Tejeda
+- [Sodexis](https://www.sodexis.com) <<dev@sodexis.com>>
+  - Sakthivel <<sakthivel@sodexis.com>>
+- [Quartile](https://www.quartile.co):
+  - Aung Ko Ko Lin
