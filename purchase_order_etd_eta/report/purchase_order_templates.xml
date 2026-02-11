@@ -2,15 +2,15 @@
 <odoo>
     <template id="purchase_etd_eta_info">
         <div id="etd_eta_info" class="row mb-4">
-            <div t-if="o.date_etd" class="col-3">
+            <div t-if="o.date_etd" class="col-2">
                 <strong>ETD:</strong>
                 <p t-field="o.date_etd" class="m-0" />
             </div>
-            <div t-if="o.date_eta" class="col-3">
+            <div t-if="o.date_eta" class="col-2">
                 <strong>ETA:</strong>
                 <p t-field="o.date_eta" class="m-0" />
             </div>
-            <div t-if="o.shipping_schedule_note" class="col-3">
+            <div t-if="o.shipping_schedule_note" class="col-6">
                 <strong>Shipping Schedule Note:</strong>
                 <p t-field="o.shipping_schedule_note" class="m-0" />
             </div>

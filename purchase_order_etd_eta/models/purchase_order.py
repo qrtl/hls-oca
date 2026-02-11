@@ -10,11 +10,9 @@ class PurchaseOrder(models.Model):
     date_etd = fields.Date(string="ETD", help="Estimated Time of Departure")
     date_eta = fields.Date(string="ETA", help="Estimated Time of Arrival")
     shipping_schedule_note = fields.Char(
-        help=(
-            "Additional shipping schedule instructions or clarifications. "
-            "Use this field when ETD or ETA cannot be expressed as a specific date "
-            "(for example: ASAP, TBD, etc.)."
-        )
+        help="Additional shipping schedule instructions or clarifications. "
+        "Use this field when ETD or ETA cannot be expressed as a specific date "
+        "(for example: ASAP, TBD, etc.).",
     )
 
     def display_expected_arrival(self):

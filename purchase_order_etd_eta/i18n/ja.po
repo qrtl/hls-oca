@@ -1,0 +1,101 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_order_etd_eta
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-11 13:50+0000\n"
+"PO-Revision-Date: 2026-02-11 13:50+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_order_etd_eta
+#: model_terms:ir.ui.view,arch_db:purchase_order_etd_eta.purchase_etd_eta_info
+msgid "<strong>ETA:</strong>"
+msgstr "<strong>ETA:</strong>"
+
+#. module: purchase_order_etd_eta
+#: model_terms:ir.ui.view,arch_db:purchase_order_etd_eta.purchase_etd_eta_info
+msgid "<strong>ETD:</strong>"
+msgstr "<strong>ETD:</strong>"
+
+#. module: purchase_order_etd_eta
+#: model_terms:ir.ui.view,arch_db:purchase_order_etd_eta.purchase_etd_eta_info
+msgid "<strong>Shipping Schedule Note:</strong>"
+msgstr "<strong>出荷スケジュール備考:</strong>"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model.fields,help:purchase_order_etd_eta.field_purchase_order__shipping_schedule_note
+msgid ""
+"Additional shipping schedule instructions or clarifications. Use this field "
+"when ETD or ETA cannot be expressed as a specific date (for example: ASAP, "
+"TBD, etc.)."
+msgstr "出荷スケジュールに関する補足情報や説明。ETDやETAを特定の日付で表せない場合に使用します（例: ASAP、TBDなど）。"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model,name:purchase_order_etd_eta.model_res_company
+msgid "Companies"
+msgstr "会社"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model,name:purchase_order_etd_eta.model_res_config_settings
+msgid "Config Settings"
+msgstr "コンフィグ設定"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model.fields,field_description:purchase_order_etd_eta.field_purchase_order__date_eta
+#: model_terms:ir.ui.view,arch_db:purchase_order_etd_eta.purchase_order_view_search
+#: model_terms:ir.ui.view,arch_db:purchase_order_etd_eta.view_purchase_order_filter
+msgid "ETA"
+msgstr "ETA"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model.fields,field_description:purchase_order_etd_eta.field_purchase_order__date_etd
+#: model_terms:ir.ui.view,arch_db:purchase_order_etd_eta.purchase_order_view_search
+#: model_terms:ir.ui.view,arch_db:purchase_order_etd_eta.view_purchase_order_filter
+msgid "ETD"
+msgstr "ETD"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model.fields,help:purchase_order_etd_eta.field_purchase_order__date_eta
+msgid "Estimated Time of Arrival"
+msgstr "到着予定日"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model.fields,help:purchase_order_etd_eta.field_purchase_order__date_etd
+msgid "Estimated Time of Departure"
+msgstr "出発予定日"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model.fields,field_description:purchase_order_etd_eta.field_res_company__hide_expected_arrival_when_eta
+#: model:ir.model.fields,field_description:purchase_order_etd_eta.field_res_config_settings__hide_expected_arrival_when_eta
+msgid "Hide Expected Arrival When Eta"
+msgstr "ETA設定時に入荷予定日を非表示"
+
+#. module: purchase_order_etd_eta
+#: model_terms:ir.ui.view,arch_db:purchase_order_etd_eta.res_config_settings_view_form
+msgid "Hide Expected Arrival in Purchase Orders Reports"
+msgstr "購買オーダレポートで入荷予定日を非表示"
+
+#. module: purchase_order_etd_eta
+#: model_terms:ir.ui.view,arch_db:purchase_order_etd_eta.res_config_settings_view_form
+msgid ""
+"Hide the expected arrival date in purchase orders reports when the ETA is "
+"set."
+msgstr "ETAが設定されている場合、購買オーダレポートの入荷予定日を非表示にします。"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model,name:purchase_order_etd_eta.model_purchase_order
+msgid "Purchase Order"
+msgstr "購買オーダ"
+
+#. module: purchase_order_etd_eta
+#: model:ir.model.fields,field_description:purchase_order_etd_eta.field_purchase_order__shipping_schedule_note
+msgid "Shipping Schedule Note"
+msgstr "出荷スケジュール備考"
