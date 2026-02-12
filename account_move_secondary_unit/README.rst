@@ -28,8 +28,13 @@ Account Move Secondary Unit
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module extends account moves to invoice or bill products using a
-secondary unit of measure from a different UoM category.
+This module extends account moves to support a secondary unit of measure
+from a different UoM category on invoice and bill lines. It adds
+secondary quantity, secondary unit, and secondary price columns, where
+changing the secondary quantity or price automatically recalculates the
+corresponding primary values and vise versa. The printed invoice report
+can be configured to show primary, secondary, or both units for
+quantities and prices.
 
 **Table of contents**
 
@@ -39,29 +44,36 @@ secondary unit of measure from a different UoM category.
 Configuration
 =============
 
-To set up the default secondary unit for invoices for a product:
-
-1. Open the product you want to configure.
-2. In the General Information tab, set the Default Secondary Unit for
-   Invoices. You can only select a secondary UoM defined in the
-   Secondary Unit of Measure table.
-
 For configuration details on displaying secondary unit information in
-invoice reports and the Invoice Portal, see the guidelines provided in
-product_secondary_unit.
+invoice reports and the Invoice Portal, please refer to the
+product_secondary_unit configuration guide.
 
 Usage
 =====
 
 To use this module, you need to:
 
-1. Go to Products and open the product you want to configure.
-2. In the General Information tab, add a record under Secondary Unit of
-   Measure.
-3. Set the conversion factor.
-4. Create an invoice or bill for that product.
-5. On the invoice/bill line, adjust the quantity and the secondary unit
-   quantity.
+1. Enable *Units of Measure* under Settings > Inventory (or
+   Purchase/Sales).
+2. Go to a product form, and add at least one secondary unit of measure
+   with a conversion factor.
+3. Create an invoice or bill for that product.
+
+On the invoice/bill line, you will see the following additional columns
+(toggle them via the optional columns button if hidden):
+
+-  **Secondary Qty**: Changing this value automatically recalculates the
+   primary quantity based on the conversion factor.
+-  **Second unit**: The secondary unit of measure to use.
+-  **Secondary Price**: Automatically computed from the unit price and
+   the conversion factor. Editing it updates the unit price accordingly.
+
+For printed/PDF invoices, you can configure how quantities and prices
+are displayed under Settings > General Settings > Secondary UoM:
+
+-  *Primary*: Only the primary unit is shown (default).
+-  *Secondary*: Only the secondary unit quantity and price are shown.
+-  *Both*: Both primary and secondary values are shown.
 
 Bug Tracker
 ===========

@@ -30,7 +30,6 @@ class TestAccountMoveSecondaryUnit(BaseCommon):
                 "product_tmpl_id": cls.product.product_tmpl_id.id,
             }
         )
-        cls.product.account_move_secondary_uom_id = cls.secondary_unit
         cls.partner = cls.env["res.partner"].create({"name": "Test Partner"})
         cls.invoice = cls.env["account.move"].create(
             {
@@ -60,17 +59,6 @@ class TestAccountMoveSecondaryUnit(BaseCommon):
             # Test onchange_product_uom_for_secondary
             line.product_uom_id = self.product_uom_gram
             self.assertEqual(line.secondary_uom_qty, 1.0)
-
-    def test_account_move_default_secondary_uom(self):
-        invoice = Form(self.invoice)
-        with invoice.invoice_line_ids.new() as line_new:
-            # Test default invoice line secondary uom
-            line_new.product_id = self.product
-            self.assertEqual(line_new.secondary_uom_id, self.secondary_unit)
-            self.assertEqual(line_new.secondary_uom_qty, 1.0)
-            self.assertAlmostEqual(line_new.quantity, 0.7, places=2)
-            line_new.quantity = 1
-            self.assertEqual(line_new.secondary_uom_qty, 1.43)
 
     def test_account_move_secondary_uom_price(self):
         invoice = Form(self.invoice)

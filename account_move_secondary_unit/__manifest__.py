@@ -12,7 +12,6 @@
     "data": [
         "report/report_invoice.xml",
         "views/account_move_views.xml",
-        "views/product_views.xml",
     ],
     "maintainers": ["yostashiro", "aungkokolin1997"],
     "installable": True,

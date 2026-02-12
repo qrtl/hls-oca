@@ -30,7 +30,7 @@ class AccountMoveLine(models.Model):
     @api.depends("price_unit", "secondary_uom_id", "secondary_uom_id.factor")
     def _compute_secondary_uom_price(self):
         for rec in self:
-            if rec.secondary_uom_id:
+            if rec.secondary_uom_id.factor:
                 rec.secondary_uom_price = rec.price_unit * rec.secondary_uom_id.factor
             else:
                 rec.secondary_uom_price = 0.0
@@ -38,19 +38,9 @@ class AccountMoveLine(models.Model):
     @api.onchange("secondary_uom_price")
     def _inverse_secondary_uom_price(self):
         for rec in self:
-            if rec.secondary_uom_id:
+            if rec.secondary_uom_id.factor:
                 rec.price_unit = rec.secondary_uom_price / rec.secondary_uom_id.factor
 
     @api.onchange("product_uom_id")
     def onchange_product_uom_for_secondary(self):
         self._onchange_helper_product_uom_for_secondary()
-
-    @api.onchange("product_id")
-    def _onchange_product_id(self):
-        product_sec_uom = (
-            self.product_id.account_move_secondary_uom_id
-            or self.product_id.product_tmpl_id.account_move_secondary_uom_id
-        )
-        self.secondary_uom_id = product_sec_uom
-        if self.secondary_uom_id:
-            self.secondary_uom_qty = 1.0
