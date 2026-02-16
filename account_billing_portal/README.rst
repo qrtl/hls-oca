@@ -48,11 +48,11 @@ Configuration
 
 To choose the billing portal template:
 
--  Go to *Invoicing → Configuration → Settings*.
--  Set a value in **Choose Billing Portal Report**. If set, this report
-   will be used for both the billing portal and the billing email
-   attachment sent to the partner. If left empty, the standard report
-   from the Account Billing module will be used instead.
+- Go to *Invoicing → Configuration → Settings*.
+- Set a value in **Choose Billing Portal Report**. If set, this report
+  will be used for both the billing portal and the billing email
+  attachment sent to the partner. If left empty, the standard report
+  from the Account Billing module will be used instead.
 
 Bug Tracker
 ===========
@@ -75,9 +75,9 @@ Authors
 Contributors
 ------------
 
--  `Quartile <https://www.quartile.co>`__:
+- `Quartile <https://www.quartile.co>`__:
 
-   -  Aung Ko Ko Lin
+  - Aung Ko Ko Lin
 
 Maintainers
 -----------
