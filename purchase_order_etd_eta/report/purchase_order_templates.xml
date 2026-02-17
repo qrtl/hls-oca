@@ -12,7 +12,11 @@
             </div>
             <div t-if="o.shipping_schedule_note" class="col-6">
                 <strong>Shipping Schedule Note:</strong>
-                <p t-field="o.shipping_schedule_note" class="m-0" />
+                <p
+                    t-field="o.shipping_schedule_note"
+                    class="m-0"
+                    style="white-space: pre"
+                />
             </div>
         </div>
     </template>
