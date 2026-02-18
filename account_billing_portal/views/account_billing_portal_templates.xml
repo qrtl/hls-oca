@@ -16,10 +16,7 @@
                 <t t-else="">Billings</t>
             </li>
             <li t-if="billing" class="breadcrumb-item active">
-                <t t-out="billing.name" t-if="billing.name" />
-                <t t-else="">
-                    <em>Draft Billing</em>
-                </t>
+                <t t-out="billing.name" />
             </li>
         </xpath>
     </template>
@@ -72,11 +69,6 @@
                     <tr class="active">
                         <th name="billing_number">Billing #</th>
                         <th name="billing_date">Billing Date</th>
-                        <th
-                            name="threshold_date"
-                            class='d-none d-md-table-cell'
-                        >Threshold Date</th>
-                        <th name="status">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -87,38 +79,11 @@
                                     t-att-href="billing.get_portal_url()"
                                     t-att-title="billing.name"
                                 >
-                                    <t
-                                        t-out="billing.name"
-                                        t-if="billing.name != False"
-                                    />
-                                    <em t-else="">Draft Billing</em>
+                                    <t t-out="billing.name" />
                                 </a>
                             </td>
                             <td>
                                 <span t-field="billing.date" />
-                            </td>
-                            <td
-                                class='d-none d-md-table-cell'
-                                t-att-class="'text-danger' if billing.date and billing.date &lt; datetime.date.today() else ''"
-                            >
-                                <span t-field="billing.date" />
-                            </td>
-                            <td name="billing_status">
-                                <t t-if="billing.state == 'billed'">
-                                    <span
-                                        class="badge rounded-pill text-bg-success d-none d-md-inline"
-                                    > Posted</span>
-                                </t>
-                                <t t-elif="billing.state == 'draft'">
-                                    <span
-                                        class="badge rounded-pill text-bg-info d-none d-md-inline"
-                                    > Draft</span>
-                                </t>
-                                <t t-else="">
-                                    <span
-                                        class="badge rounded-pill text-bg-warning d-none d-md-inline"
-                                    > Cancelled</span>
-                                </t>
                             </td>
                         </tr>
                     </t>

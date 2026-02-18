@@ -7,6 +7,14 @@
         <field name="arch" type="xml">
             <xpath expr="//setting[@id='show_sale_receipts']" position="after">
                 <setting
+                    id="billing_email_template_id"
+                    company_dependent="1"
+                    string="Choose Billing Email Template"
+                    help="Select the email template used for billing emails. If left empty, the default template provided by Account Billing Portal will be used."
+                >
+                    <field name="billing_email_template_id" />
+                </setting>
+                <setting
                     id="billing_portal_report"
                     company_dependent="1"
                     string="Choose Billing Portal Report"

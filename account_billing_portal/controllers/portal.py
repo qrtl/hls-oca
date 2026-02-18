@@ -13,7 +13,7 @@ from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 class CustomerPortalBilling(CustomerPortal):
     def _show_report(self, model, report_type, report_ref, download=False):
-        if not (model._name == "account.billing"):
+        if model._name != "account.billing":
             return super()._show_report(model, report_type, report_ref, download)
         billing_report = request.env.user.company_id.billing_portal_report
         if billing_report:
@@ -54,8 +54,6 @@ class CustomerPortalBilling(CustomerPortal):
     def _render_billing_portal(
         self,
         page,
-        date_begin,
-        date_end,
         sortby,
         filterby,
         searchbar_filters,
@@ -64,28 +62,18 @@ class CustomerPortalBilling(CustomerPortal):
         values = self._prepare_portal_layout_values()
         Billing = request.env["account.billing"]
         domain = self._get_billing_domain()
-        if date_begin and date_end:
-            domain += [
-                ("create_date", ">", date_begin),
-                ("create_date", "<=", date_end),
-            ]
         searchbar_sortings = self._get_billing_searchbar_sortings()
         if not sortby:
             sortby = "date"
         order = searchbar_sortings[sortby]["order"]
         if searchbar_filters:
-            if not filterby:
+            if not filterby or filterby not in searchbar_filters:
                 filterby = default_filter
             domain += searchbar_filters[filterby]["domain"]
         count = Billing.search_count(domain)
         pager = portal_pager(
             url="/my/billings",
-            url_args={
-                "date_begin": date_begin,
-                "date_end": date_end,
-                "sortby": sortby,
-                "filterby": filterby,
-            },
+            url_args={"sortby": sortby, "filterby": filterby},
             total=count,
             page=page,
             step=self._items_per_page,
@@ -96,7 +84,6 @@ class CustomerPortalBilling(CustomerPortal):
         request.session["my_billing_history"] = billings.ids[:100]
         values.update(
             {
-                "date": date_begin,
                 "billings": billings,
                 "page_name": "billing",
                 "pager": pager,
@@ -115,19 +102,15 @@ class CustomerPortalBilling(CustomerPortal):
         auth="user",
         website=True,
     )
-    def portal_my_billings(
-        self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw
-    ):
+    def portal_my_billings(self, page=1, sortby=None, filterby=None, **kw):
         return self._render_billing_portal(
             page,
-            date_begin,
-            date_end,
             sortby,
             filterby,
             {
                 "all": {
                     "label": _("All"),
-                    "domain": [("state", "in", ["draft", "billed", "cancel"])],
+                    "domain": [("state", "=", "billed")],
                 },
                 "out_invoice": {
                     "label": _("Customer Bills"),

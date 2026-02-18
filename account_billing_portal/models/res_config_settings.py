@@ -7,6 +7,10 @@ from odoo import fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
+    billing_email_template_id = fields.Many2one(
+        related="company_id.billing_email_template_id",
+        readonly=False,
+    )
     billing_portal_report = fields.Many2one(
         related="company_id.billing_portal_report",
         readonly=False,

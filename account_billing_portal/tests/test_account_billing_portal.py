@@ -100,3 +100,14 @@ class TestAccountBillingPortal(HttpCase):
         )
         self.assertNotEqual(res.status_code, 200)
         self.assertTrue(res.headers.get("Location", "").endswith("/my"))
+
+    def test_action_billing_send(self):
+        result = self.portal_billing.action_billing_send()
+        self.assertEqual(result["type"], "ir.actions.act_window")
+        self.assertEqual(result["res_model"], "mail.compose.message")
+        self.assertEqual(result["target"], "new")
+        # Check that a PDF attachment was created and linked in context
+        ctx = result["context"]
+        attach_ids = ctx["default_attachment_ids"][0][2]
+        attachment = self.env["ir.attachment"].browse(attach_ids[0])
+        self.assertTrue(attachment)
