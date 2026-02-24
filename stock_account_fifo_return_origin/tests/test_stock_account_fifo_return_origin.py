@@ -81,3 +81,17 @@ class TestStockAccountFifoReturnOrigin(BaseCommon):
         return_picking.button_validate()
         return_valuation_layer = return_move.stock_valuation_layer_ids[0]
         self.assertEqual(abs(return_valuation_layer.value), 2000)
+
+    def test_create_correction_svl(self):
+        self.create_receipt_picking(100)
+        picking = self.create_receipt_picking(200)
+        picking.action_toggle_is_locked()
+        move = picking.move_ids[0]
+        move_line = move.move_line_ids[0]
+        move_line.quantity = 8
+        correction_svl = move.stock_valuation_layer_ids.filtered(
+            lambda svl: svl.quantity < 0
+        )
+        self.assertTrue(correction_svl)
+        # Should use receipt's cost (200), not FIFO oldest (100)
+        self.assertEqual(correction_svl.value, -400.0)

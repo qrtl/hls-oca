@@ -7,19 +7,17 @@ from odoo import models
 class StockMove(models.Model):
     _inherit = "stock.move"
 
-    def _action_done(self, cancel_backorder=False):
-        return_moves = self.filtered(
-            lambda m: m._is_out() and m.origin_returned_move_id
-        )
+    def _get_out_svl_vals(self, forced_quantity):
+        return_moves = self.filtered(lambda m: m.origin_returned_move_id)
         other_moves = self - return_moves
-        res = self.browse()
-        if other_moves:
-            res = super(StockMove, other_moves)._action_done(
-                cancel_backorder=cancel_backorder
-            )
+        svl_vals_list = (
+            super(StockMove, other_moves)._get_out_svl_vals(forced_quantity)
+            if other_moves
+            else []
+        )
         for move in return_moves:
-            res |= super(
+            svl_vals_list += super(
                 StockMove,
                 move.with_context(origin_returned_move=move.origin_returned_move_id),
-            )._action_done(cancel_backorder=cancel_backorder)
-        return res
+            )._get_out_svl_vals(forced_quantity)
+        return svl_vals_list
