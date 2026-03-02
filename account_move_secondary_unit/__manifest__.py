@@ -10,6 +10,7 @@
     "license": "AGPL-3",
     "depends": ["account", "product_secondary_unit"],
     "data": [
+        "security/account_move_secondary_unit_groups.xml",
         "report/report_invoice.xml",
         "views/account_move_views.xml",
     ],
