@@ -4,10 +4,12 @@
 import logging
 import re
 
+from dateutil.relativedelta import relativedelta
 from lxml import html
 from markupsafe import Markup
+from pytz import timezone
 
-from odoo import api, models
+from odoo import api, fields, models, tools
 from odoo.tools.profiler import QwebTracker
 from odoo.tools.safe_eval import safe_eval
 
@@ -30,10 +32,21 @@ class IrQWeb(models.AbstractModel):
             html_str = html_str.replace(m.content_from, m.content_to or "")
         return html_str
 
+    def _get_eval_context(self, record=None):
+        return {
+            "time": tools.safe_eval.time,
+            "datetime": tools.safe_eval.datetime,
+            "dateutil": {
+                "relativedelta": relativedelta,
+            },
+            "timezone": timezone,
+            "context_today": tools.safe_eval.datetime.datetime.now,
+        }
+
     def _record_matches_domain(self, model_name, res_id, domain_str):
         """Check if record (model_name, res_id) matches the given domain."""
         try:
-            dom = safe_eval(domain_str)
+            dom = safe_eval(domain_str, self._get_eval_context())
         except Exception:
             _logger.warning(
                 "Invalid domain on template.content.mapping for %s,%s: %s",
