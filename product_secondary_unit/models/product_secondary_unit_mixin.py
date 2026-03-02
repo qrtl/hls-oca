@@ -74,14 +74,16 @@ class ProductSecondaryUnitMixin(models.AbstractModel):
         return [self._secondary_unit_fields["qty_field"]]
 
     @api.model
-    def _convert_qty_to_secondary_uom(self, record, qty):
+    def _convert_qty_to_secondary_uom(self, qty):
         # Intended to be called from other operations if needed.
-        uom_line = record._get_uom_line()
-        uom_product = record.product_id[record._product_uom_field]
-        qty_base = uom_line._compute_quantity(qty, uom_product)
+        self.ensure_one()
+        uom_line = self._get_uom_line()
+        uom_product = self.product_id[self._product_uom_field]
+        if uom_line != uom_product:
+            qty = uom_line._compute_quantity(qty, uom_product)
         return float_round(
-            qty_base / (record.secondary_uom_id.factor or 1.0),
-            precision_rounding=record.secondary_uom_id.uom_id.rounding,
+            qty / (self.secondary_uom_id.factor or 1.0),
+            precision_rounding=self.secondary_uom_id.uom_id.rounding,
         )
 
     @api.depends(lambda x: x._get_secondary_uom_qty_depends())
@@ -93,7 +95,7 @@ class ProductSecondaryUnitMixin(models.AbstractModel):
             elif line.secondary_uom_id.dependency_type == "independent":
                 continue
             qty_line = line._get_quantity_from_line()
-            line.secondary_uom_qty = self._convert_qty_to_secondary_uom(line, qty_line)
+            line.secondary_uom_qty = line._convert_qty_to_secondary_uom(qty_line)
 
     def _get_default_value_for_qty_field(self):
         return self.default_get([self._secondary_unit_fields["qty_field"]]).get(
@@ -137,7 +139,7 @@ class ProductSecondaryUnitMixin(models.AbstractModel):
         elif self.secondary_uom_id.dependency_type == "independent":
             return
         qty_line = self._get_quantity_from_line()
-        self.secondary_uom_qty = self._convert_qty_to_secondary_uom(self, qty_line)
+        self.secondary_uom_qty = self._convert_qty_to_secondary_uom(qty_line)
 
     @api.model
     def default_get(self, fields_list):

@@ -3,7 +3,7 @@
 {
     "name": "Product Secondary Unit",
     "summary": "Set a secondary unit per product",
-    "version": "18.0.1.1.0",
+    "version": "18.0.2.0.0",
     "development_status": "Production/Stable",
     "category": "Product",
     "website": "https://github.com/OCA/product-attribute",
@@ -13,6 +13,7 @@
     "installable": True,
     "depends": ["product"],
     "data": [
+        "security/product_secondary_unit_groups.xml",
         "security/ir.model.access.csv",
         "views/product_views.xml",
         "views/res_config_settings_views.xml",
