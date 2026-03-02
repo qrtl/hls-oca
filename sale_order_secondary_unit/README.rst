@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 =========================
 Sale Order Secondary Unit
 =========================
@@ -17,7 +13,7 @@ Sale Order Secondary Unit
 .. |badge1| image:: https://img.shields.io/badge/maturity-Production%2FStable-green.png
     :target: https://odoo-community.org/page/development-status
     :alt: Production/Stable
-.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fsale--workflow-lightgray.png?logo=github
@@ -47,6 +43,10 @@ To configure this module, you need to:
 
 1. Go to *Sales > Configuration > Products > Secondary Units of Measure*
    to manage all the 'Secondary Units of Measure' in the system.
+
+For configuration details on displaying secondary unit information in
+the sale report and portal, please refer to the product_secondary_unit
+configuration guide.
 
 Usage
 =====
@@ -81,16 +81,20 @@ Authors
 Contributors
 ------------
 
-- Tony Gu <tony@openerp.cn>
-- Alexei Rivera <arivera@archeti.com>
-- Kevin Roche <kevin.roche@akretion.com>
-- `Tecnativa <https://www.tecnativa.com>`__:
+-  Tony Gu <tony@openerp.cn>
+-  Alexei Rivera <arivera@archeti.com>
+-  Kevin Roche <kevin.roche@akretion.com>
+-  `Tecnativa <https://www.tecnativa.com>`__:
 
-  - Carlos Dauden
-  - Sergio Teruel
-  - Ernesto Tejeda
-  - Pedro M. Baeza
-  - Pilar Vargas
+   -  Carlos Dauden
+   -  Sergio Teruel
+   -  Ernesto Tejeda
+   -  Pedro M. Baeza
+   -  Pilar Vargas
+
+-  `Quartlie <https://www.quartile.co>`__:
+
+   -  Aung Ko Ko Lin
 
 Maintainers
 -----------
