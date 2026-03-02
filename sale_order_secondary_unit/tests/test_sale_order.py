@@ -1,6 +1,8 @@
 # Copyright 2018-2020 Tecnativa - Carlos Dauden
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import Command
+from unittest.mock import patch
+
+from odoo import Command, fields
 from odoo.tests import Form, tagged
 
 from odoo.addons.base.tests.common import BaseCommon
@@ -107,3 +109,29 @@ class TestSaleOrder(BaseCommon):
         self.assertEqual(self.order.order_line.secondary_uom_qty, 16)
         self.assertEqual(self.order.order_line.secondary_uom_unit_price, 500)
         self.assertEqual(self.order.order_line.price_subtotal, 8000)
+
+    def test_prepare_invoice_line(self):
+        self.order.order_line.write(
+            {"secondary_uom_id": self.secondary_unit.id, "secondary_uom_qty": 5}
+        )
+        aml_fields = self.env["account.move.line"]._fields.copy()
+        # Test with account_move_secondary_unit installed
+        aml_fields["secondary_uom_id"] = fields.Many2one("product.secondary.unit")
+        with patch.object(
+            type(self.env["account.move.line"]), "_fields", aml_fields
+        ):
+            invoice_line_vals = self.order.order_line._prepare_invoice_line()
+            self.assertEqual(
+                invoice_line_vals["secondary_uom_id"], self.secondary_unit.id
+            )
+        # Test without account_move_secondary_unit installed
+        aml_fields.pop("secondary_uom_id", None)
+        with patch.object(
+            type(self.env["account.move.line"]), "_fields", aml_fields
+        ):
+            invoice_line_vals = self.order.order_line._prepare_invoice_line()
+            self.assertNotIn("secondary_uom_id", invoice_line_vals)
+        # Test without secondary_uom_id set on sale order line
+        self.order.order_line.secondary_uom_id = False
+        invoice_line_vals = self.order.order_line._prepare_invoice_line()
+        self.assertNotIn("secondary_uom_id", invoice_line_vals)
