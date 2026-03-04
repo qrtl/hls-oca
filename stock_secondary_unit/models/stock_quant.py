@@ -13,6 +13,9 @@ class StockQuant(models.Model):
         related="product_id.stock_secondary_uom_id",
         store=True,
     )
+    # Need precompute=False since secondary_uom_id is not precompute field and we
+    # shouldn't depend for compute method of precompute field.
+    secondary_uom_qty = fields.Float(precompute=False)
 
     @api.model
     def _get_secondary_uom_qty_depends(self):
