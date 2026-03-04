@@ -12,7 +12,7 @@
         </t>
         <t t-if="line.get_secondary_uom_display_mode() == 'both'">
             <br />
-            <span class="text-muted">
+            <span id="secondary_uom_price" class="text-muted">
                 (<span t-field="line.secondary_uom_price" />
                 / <span t-field="line.secondary_uom_id.name" groups="uom.group_uom" />)
             </span>
@@ -70,7 +70,7 @@
         <xpath expr="//div[@id='quote_qty']" position="inside">
             <t t-if="line.get_secondary_uom_display_mode() == 'both'">
                 <br />
-                <span class="text-muted">
+                <span id="secondary_uom_qty" class="text-muted">
                     (<span t-field="line.secondary_uom_qty" />
                     <span
                     t-field="line.secondary_uom_id.name"

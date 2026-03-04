@@ -47,7 +47,7 @@
         <xpath expr="//span[@t-field='line.product_qty']/.." position="inside">
             <t t-if="line.get_secondary_uom_display_mode() == 'both'">
                 <br />
-                <span class="text-muted">
+                <span id="secondary_uom_qty" class="text-muted">
                     (<span t-field="line.secondary_uom_qty" />
                     <span
                     t-field="line.secondary_uom_id.name"
