@@ -11,7 +11,7 @@
                 scope="col"
                 class="text-nowrap"
                 style="min-width: 0 !important; width: auto;"
-                t-att-title="_t('Use this field to find existing records without updating its value.')"
+                title="Use this field to find existing records without updating its value."
             >Match</th>
         </xpath>
         <xpath expr="//td[.//t[@t-foreach='column.comments']]" position="before">
