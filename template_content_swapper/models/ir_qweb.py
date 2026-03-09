@@ -8,6 +8,7 @@ from lxml import html
 from markupsafe import Markup
 
 from odoo import api, models
+from odoo.osv.expression import normalize_domain
 from odoo.tools.profiler import QwebTracker
 from odoo.tools.safe_eval import safe_eval
 
@@ -19,40 +20,46 @@ ARTICLE_XPATH = '//div[contains(@class, "article") and @data-oe-model and @data-
 class IrQWeb(models.AbstractModel):
     _inherit = "ir.qweb"
 
-    def _apply_mappings(self, html_str, mappings, model_name=None, res_id=None):
+    def _apply_mappings(self, html_str, mappings, res_id=None, match_map=None):
         """Apply mappings to HTML string, optionally filtering by record domain."""
         for m in mappings:
             if m.domain:
-                if m.report_model and m.report_model != model_name:
-                    continue
-                if not self._record_matches_domain(model_name, res_id, m.domain):
+                if match_map is None or res_id not in match_map.get(m.id, set()):
                     continue
             html_str = html_str.replace(m.content_from, m.content_to or "")
         return html_str
 
-    def _record_matches_domain(self, model_name, res_id, domain_str):
-        """Check if record (model_name, res_id) matches the given domain."""
-        try:
-            dom = safe_eval(domain_str)
-        except Exception:
-            _logger.warning(
-                "Invalid domain on template.content.mapping for %s,%s: %s",
-                model_name,
-                res_id,
-                domain_str,
-            )
-            return False
-        return bool(self.env[model_name].search_count([("id", "=", res_id)] + dom))
+    def _get_match_map(self, domain_mappings):
+        """Pre-evaluate domains and batch-fetch matching record IDs.
 
-    def _apply_mappings_on_articles(self, articles, domain_mappings):
+        Returns a dict {mapping_id: set of matching record IDs}.
+        """
+        result = {}
+        eval_ctx = self.env["template.content.mapping"]._get_eval_context()
+        for m in domain_mappings:
+            if not m.report_model:
+                continue
+            try:
+                dom = normalize_domain(safe_eval(m.domain, eval_ctx))
+            except Exception:
+                _logger.warning(
+                    "Invalid domain on template.content.mapping %s: %s",
+                    m.id,
+                    m.domain,
+                )
+                continue
+            result[m.id] = set(self.env[m.report_model].search(dom).ids)
+        return result
+
+    def _apply_article_mappings(self, articles, domain_mappings, match_map):
         """Apply domain mappings per article block for multi-record renders."""
         for article in articles:
             article_html = html.tostring(article, encoding="unicode")
             new_html = self._apply_mappings(
                 article_html,
                 domain_mappings,
-                article.get("data-oe-model"),
                 int(article.get("data-oe-id")),
+                match_map,
             )
             if new_html != article_html:
                 try:
@@ -93,6 +100,7 @@ class IrQWeb(models.AbstractModel):
         result_str = self._apply_mappings(result_str, global_mappings)
         if not domain_mappings:
             return Markup(result_str)
+        match_map = self._get_match_map(domain_mappings)
         try:
             root = html.fromstring(result_str)
         except Exception:
@@ -110,10 +118,9 @@ class IrQWeb(models.AbstractModel):
             result_str = self._apply_mappings(
                 result_str,
                 domain_mappings,
-                article.get("data-oe-model"),
                 int(article.get("data-oe-id")),
+                match_map,
             )
             return Markup(result_str)
-        self._apply_mappings_on_articles(articles, domain_mappings)
-        final_html = html.tostring(root, encoding="unicode")
-        return Markup(final_html)
+        self._apply_article_mappings(articles, domain_mappings, match_map)
+        return Markup(html.tostring(root, encoding="unicode"))
