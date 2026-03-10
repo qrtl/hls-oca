@@ -12,6 +12,7 @@ class StockQuant(models.Model):
     secondary_uom_id = fields.Many2one(
         related="product_id.stock_secondary_uom_id",
         store=True,
+        default=None,
     )
     # Need precompute=False since secondary_uom_id is not precompute field and we
     # shouldn't depend for compute method of precompute field.
