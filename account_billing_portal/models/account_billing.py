@@ -3,8 +3,9 @@
 
 import base64
 
-from odoo import Command, _, models
+from odoo import Command, _, fields, models, tools
 from odoo.exceptions import UserError
+from odoo.tools.safe_eval import safe_eval
 
 
 class AccountBilling(models.Model):
@@ -20,6 +21,17 @@ class AccountBilling(models.Model):
     def _get_report_base_filename(self):
         self.ensure_one()
         return self.name
+
+    def _get_eval_context(self):
+        """Get evaluation context for safe_eval expressions."""
+        return {
+            "time": tools.safe_eval.time,
+            "datetime": tools.safe_eval.datetime,
+            "dateutil": tools.safe_eval.dateutil,
+            "timezone": tools.safe_eval.pytz.timezone,
+            "context_today": lambda: fields.Date.context_today(self),
+            "object": self,
+        }
 
     def action_billing_send(self):
         self.ensure_one()
@@ -45,10 +57,16 @@ class AccountBilling(models.Model):
                 _("Please configure the Billing Portal Report in the settings.")
             )
         pdf_content, _type = report._render_qweb_pdf(report.id, self.ids)
-        name = self.display_name if self.display_name else "BILLING"
+        if report.print_report_name:
+            eval_context = self._get_eval_context()
+            attachment_name = safe_eval(report.print_report_name, eval_context)
+        else:
+            attachment_name = self.display_name if self.display_name else "BILLING"
+        if not attachment_name.endswith(".pdf"):
+            attachment_name = f"{attachment_name}.pdf"
         attach = self.env["ir.attachment"].create(
             {
-                "name": f"{name}.pdf",
+                "name": attachment_name,
                 "type": "binary",
                 "datas": base64.b64encode(pdf_content),
                 "mimetype": "application/pdf",
