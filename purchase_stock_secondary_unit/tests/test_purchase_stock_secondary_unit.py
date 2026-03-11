@@ -1,13 +1,9 @@
 # Copyright 2020 Jarsa Sistemas
 # Copyright 2021 Tecnativa - Sergio Teruel
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
-import logging
-
 from odoo.tests import Form
 
 from odoo.addons.base.tests.common import BaseCommon
-
-_logger = logging.getLogger(__name__)
 
 
 class TestPurchaseStockSecondaryUnit(BaseCommon):
