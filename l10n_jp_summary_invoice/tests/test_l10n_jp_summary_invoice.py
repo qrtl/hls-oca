@@ -214,3 +214,16 @@ class TestSummaryInvoice(TransactionCase):
         # The total tax amount should be 20 (204 * 0.1)
         self.assertEqual(abs(billing_tax_amount), 20)
         self.assertFalse(billing.tax_adjustment_entry_id)
+
+    def test_is_not_for_billing(self):
+        self.partner.is_not_for_billing = True
+        invoice = self._create_invoice(50, self.tax_10)
+        invoice = invoice.with_context(skip_readonly_check=True)
+        self.assertTrue(invoice.is_not_for_billing)
+        partner_2 = self.env["res.partner"].create({"name": "Test Partner 2"})
+        invoice.partner_id = partner_2
+        self.assertFalse(invoice.is_not_for_billing)
+        partner_2.is_not_for_billing = True
+        self.assertFalse(invoice.is_not_for_billing)
+        invoice.partner_id = self.partner
+        self.assertTrue(invoice.is_not_for_billing)
