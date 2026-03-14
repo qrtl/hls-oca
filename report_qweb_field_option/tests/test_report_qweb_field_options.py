@@ -153,3 +153,44 @@ class TestQwebFieldOptions(TransactionCase):
             self.test_record, "quantity", False, False, {}, values
         )
         self.assertEqual(content, "1.0")
+
+    def test_domain_validation(self):
+        """Test that invalid domain raises validation error"""
+        with self.assertRaises(ValidationError):
+            self.env["qweb.field.options"].create(
+                {
+                    "res_model_id": self.test_model.id,
+                    "field_id": self.value_field.id,
+                    "domain": "invalid domain",
+                    "digits": 2,
+                }
+            )
+
+    def test_qweb_field_option_with_domain(self):
+        values = {"report_type": "pdf"}
+        box_uom = self.env["uom.uom"].create(
+            {
+                "name": "Box",
+                "category_id": self.env.ref("uom.product_uom_categ_unit").id,
+                "uom_type": "bigger",
+                "factor_inv": 12.0,
+            }
+        )
+        self.env["qweb.field.options"].create(
+            {
+                "res_model_id": self.test_model.id,
+                "field_id": self.quantity_field.id,
+                "domain": f"[('uom_id', '=', {box_uom.id})]",
+                "digits": 0,
+            }
+        )
+        self.test_record.write({"uom_id": self.unit_uom.id, "quantity": 12.56})
+        _, content, _ = self.IrQweb._get_field(
+            self.test_record, "quantity", False, False, {}, values
+        )
+        self.assertEqual(content, "12.560")
+        self.test_record.uom_id = box_uom.id
+        _, content, _ = self.IrQweb._get_field(
+            self.test_record, "quantity", False, False, {}, values
+        )
+        self.assertEqual(content, "13")
