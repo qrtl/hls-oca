@@ -6,18 +6,31 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-25 15:17+0000\n"
+"PO-Revision-Date: 2026-03-25 15:17+0000\n"
 "Last-Translator: \n"
-"Language-Team: none\n"
-"Language: ja\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: \n"
+
+#. module: base_custom_filter
+#: model:ir.model.fields.selection,name:base_custom_filter.selection__ir_filters_group__insert_position__after
+#: model:ir.model.fields.selection,name:base_custom_filter.selection__ir_filters_group__separator_position__after
+msgid "After"
+msgstr "後"
 
 #. module: base_custom_filter
 #: model:ir.model,name:base_custom_filter.model_base
 msgid "Base"
 msgstr "ベース"
+
+#. module: base_custom_filter
+#: model:ir.model.fields.selection,name:base_custom_filter.selection__ir_filters_group__insert_position__before
+#: model:ir.model.fields.selection,name:base_custom_filter.selection__ir_filters_group__separator_position__before
+msgid "Before"
+msgstr "前"
 
 #. module: base_custom_filter
 #: model:ir.model.fields,field_description:base_custom_filter.field_ir_filters_group__create_uid
@@ -67,6 +80,11 @@ msgid "Filter Group"
 msgstr "フィルタグループ"
 
 #. module: base_custom_filter
+#: model:ir.model.fields,field_description:base_custom_filter.field_ir_filters__name
+msgid "Filter Name"
+msgstr "フィルタ名"
+
+#. module: base_custom_filter
 #: model:ir.model,name:base_custom_filter.model_ir_filters
 #: model:ir.model.fields,field_description:base_custom_filter.field_ir_filters_group__filter_ids
 msgid "Filters"
@@ -93,6 +111,31 @@ msgid "ID"
 msgstr "ID"
 
 #. module: base_custom_filter
+#: model:ir.model.fields,field_description:base_custom_filter.field_ir_filters_group__insert_position
+msgid "Insert Position"
+msgstr "挿入位置"
+
+#. module: base_custom_filter
+#: model:ir.model.fields,field_description:base_custom_filter.field_ir_filters_group__insert_xpath
+msgid "Insert XPath"
+msgstr "挿入XPath"
+
+#. module: base_custom_filter
+#: model:ir.model.fields,help:base_custom_filter.field_ir_filters_group__insert_position
+msgid "Insert the filter group before or after the element found by XPath."
+msgstr "XPathで見つかった要素の前または後にフィルタグループを挿入します。"
+
+#. module: base_custom_filter
+#. odoo-python
+#: code:addons/base_custom_filter/models/ir_filters_group.py:0
+msgid ""
+"Invalid XPath:\n"
+"%s"
+msgstr ""
+"無効なXPath:\n"
+"%s"
+
+#. module: base_custom_filter
 #: model:ir.model.fields,field_description:base_custom_filter.field_ir_filters_group__write_uid
 msgid "Last Updated by"
 msgstr "最終更新者"
@@ -113,6 +156,11 @@ msgid "Name"
 msgstr "名称"
 
 #. module: base_custom_filter
+#: model:ir.model.fields.selection,name:base_custom_filter.selection__ir_filters_group__separator_position__none
+msgid "None"
+msgstr "なし"
+
+#. module: base_custom_filter
 #: model:ir.model.fields,field_description:base_custom_filter.field_ir_filters__search_field_id
 msgid "Search Field"
 msgstr "検索フィールド"
@@ -121,6 +169,11 @@ msgstr "検索フィールド"
 #: model_terms:ir.ui.view,arch_db:base_custom_filter.search_ir_filters_group
 msgid "Search Filters Group"
 msgstr "フィルタグループを検索"
+
+#. module: base_custom_filter
+#: model:ir.model.fields,field_description:base_custom_filter.field_ir_filters_group__separator_position
+msgid "Separator Position"
+msgstr "区切り位置"
 
 #. module: base_custom_filter
 #: model:ir.model.fields,field_description:base_custom_filter.field_ir_filters__sequence
@@ -141,6 +194,28 @@ msgid "User Groups"
 msgstr "ユーザグループ"
 
 #. module: base_custom_filter
+#: model:ir.model.fields,help:base_custom_filter.field_ir_filters_group__separator_position
+msgid ""
+"Where to place the separator relative to the filters. 'None' to insert "
+"without a separator."
+msgstr ""
+"フィルタに対する区切りの配置位置。「なし」の場合は区切りなしで挿入します。"
+
+#. module: base_custom_filter
 #: model_terms:ir.ui.view,arch_db:base_custom_filter.search_ir_filters_group
 msgid "Without Filters"
 msgstr "フィルタなし"
+
+#. module: base_custom_filter
+#: model:ir.model.fields,help:base_custom_filter.field_ir_filters_group__insert_xpath
+msgid ""
+"XPath expression for the insertion point. Example: "
+"//search/filter[@name='my_filter']"
+msgstr ""
+"挿入位置のXPath式。例: "
+"//search/filter[@name='my_filter']"
+
+#. module: base_custom_filter
+#: model_terms:ir.ui.view,arch_db:base_custom_filter.view_ir_filters_group_form
+msgid "e.g. //filter[@name='my_filter']"
+msgstr "例: //filter[@name='my_filter']"
