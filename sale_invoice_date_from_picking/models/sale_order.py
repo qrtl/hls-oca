@@ -15,7 +15,7 @@ class SaleOrder(models.Model):
 
     def _prepare_invoice(self):
         invoice_vals = super()._prepare_invoice()
-        date_field = self.company_id.picking_date_field_for_invoice_date
+        date_field = self.company_id.picking_date_field_for_invoice_date.sudo()
         if not date_field:
             return invoice_vals
         picking = self._get_last_completed_picking()
