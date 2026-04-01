@@ -5,7 +5,10 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="sale.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//setting[@id='proforma_configuration']" position="after">
+            <xpath
+                expr="//block[@name='invoicing_setting_container']"
+                position="inside"
+            >
                 <setting
                     id="picking_date_for_invoice"
                     string="Picking Date for Invoice"
