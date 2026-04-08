@@ -219,7 +219,9 @@ class AccountBilling(models.Model):
 class AccountBillingLine(models.Model):
     _name = "account.billing.line"
     _description = "Billing Line"
+    _order = "sequence, id"
 
+    sequence = fields.Integer(default=10)
     billing_id = fields.Many2one(comodel_name="account.billing")
     move_id = fields.Many2one(
         comodel_name="account.move",

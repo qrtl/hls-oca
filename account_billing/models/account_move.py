@@ -42,7 +42,15 @@ class AccountMove(models.Model):
                             * (-1 if m.move_type in ["out_refund", "in_refund"] else 1),
                         }
                     )
-                    for m in self
+                    for m in self.sorted(
+                        key=lambda m: (
+                            m.date,
+                            m.name,
+                            m.invoice_date,
+                            m.id,
+                        ),
+                        reverse=True,
+                    )
                 ],
             }
         )
