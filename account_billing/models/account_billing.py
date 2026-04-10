@@ -91,7 +91,7 @@ class AccountBilling(models.Model):
         selection=[("invoice_date_due", "Due Date"), ("invoice_date", "Invoice Date")],
         required=True,
         readonly=True,
-        default="invoice_date_due",
+        default=lambda self: self._get_default_threshold_date_type(),
         help="All invoices with date (threshold date type) before and equal to "
         "threshold date will be listed in billing lines",
     )
@@ -99,6 +99,10 @@ class AccountBilling(models.Model):
         compute="_compute_payment_paid_all",
         store=True,
     )
+
+    @api.model
+    def _get_default_threshold_date_type(self):
+        return "invoice_date_due"
 
     @api.depends("billing_line_ids.payment_state")
     def _compute_payment_paid_all(self):
@@ -121,7 +125,7 @@ class AccountBilling(models.Model):
                 ("move_type", "in", types),
             ]
         )
-        return moves
+        return moves._sort_for_billing(self.threshold_date_type)
 
     def _compute_invoice_related_count(self):
         self.invoice_related_count = len(self.billing_line_ids)
