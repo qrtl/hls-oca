@@ -113,6 +113,31 @@ class Test(TransactionCase):
             "The string is not in the returned view",
         )
 
+    def test_get_filters_excludes_non_favorites(self):
+        """Test that get_filters excludes non-favorite filter types."""
+        # Create a non-favorite filter
+        self.filters_obj.create(
+            {
+                "name": "Non-Favorite Filter",
+                "type": "filter",
+                "model_id": "ir.filters.group",
+                "domain": '[["id","=",1]]',
+            }
+        )
+        # Create a favorite filter
+        self.filters_obj.create(
+            {
+                "name": "Favorite Filter",
+                "type": "favorite",
+                "model_id": "ir.filters.group",
+                "domain": '[["id","=",2]]',
+            }
+        )
+        results = self.filters_obj.get_filters("ir.filters.group")
+        result_names = [r["name"] for r in results]
+        self.assertNotIn("Non-Favorite Filter", result_names)
+        self.assertIn("Favorite Filter", result_names)
+
     def test_insert_xpath_validation(self):
         group = self.filters_group_obj.create(
             {
@@ -158,27 +183,26 @@ class Test(TransactionCase):
         between_content = view_content[filter_pos:target_pos]
         self.assertNotIn("<separator/>", between_content)
 
-    def test_get_filters_excludes_non_favorites(self):
-        """Test that get_filters excludes non-favorite filter types."""
-        # Create a non-favorite filter
-        self.filters_obj.create(
-            {
-                "name": "Non-Favorite Filter",
-                "type": "filter",
-                "model_id": "ir.filters.group",
-                "domain": '[["id","=",1]]',
-            }
+    def test_get_view_content_date_filter(self):
+        with Form(self.filters_obj) as date_filter:
+            date_filter.name = "Test Date Filter"
+            date_filter.type = "filter"
+            date_filter.model_id = "ir.filters.group"
+            date_filter.date_field = self.env.ref(
+                "base_custom_filter.field_ir_filters_group__create_date"
+            )
+        filter_record = self.filters_obj.search([("name", "=", "Test Date Filter")])
+        self.assertEqual(filter_record.name, "Test Date Filter")
+        view_dict = self.filters_group_obj.get_view(view_type="search")
+        view_content = view_dict.get("arch", b"").decode("utf-8")
+        filter_name = "ir_custom_filter_" + str(filter_record.id)
+        date_string = (
+            f'<filter name="{filter_name}" '
+            'string="Test Date Filter" '
+            'date="create_date"/>'
         )
-        # Create a favorite filter
-        self.filters_obj.create(
-            {
-                "name": "Favorite Filter",
-                "type": "favorite",
-                "model_id": "ir.filters.group",
-                "domain": '[["id","=",2]]',
-            }
+        self.assertIn(
+            date_string,
+            view_content,
+            "The date filter is not in the returned view",
         )
-        results = self.filters_obj.get_filters("ir.filters.group")
-        result_names = [r["name"] for r in results]
-        self.assertNotIn("Non-Favorite Filter", result_names)
-        self.assertIn("Favorite Filter", result_names)
