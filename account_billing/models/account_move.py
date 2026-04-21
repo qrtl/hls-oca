@@ -26,7 +26,11 @@ class AccountMove(models.Model):
         move_types = set(self.mapped("move_type"))
         return "out_invoice" if move_types.issubset(outbound_types) else "in_invoice"
 
+    def _sort_for_billing(self, date_field):
+        return self.sorted(key=lambda m: (m[date_field], m.name, m.id))
+
     def _create_billing(self, partner):
+        date_field = self.env["account.billing"]._get_default_threshold_date_type()
         billing = self.env["account.billing"].create(
             {
                 "partner_id": partner.id,
@@ -42,10 +46,11 @@ class AccountMove(models.Model):
                             * (-1 if m.move_type in ["out_refund", "in_refund"] else 1),
                         }
                     )
-                    for m in self
+                    for m in self._sort_for_billing(date_field)
                 ],
             }
         )
+        billing._sort_billing_lines()
         return billing
 
     def action_create_billing(self):
