@@ -277,32 +277,39 @@ class TestAccountBilling(TransactionCase):
         self.inv_1.button_draft()
         self.assertEqual(self.inv_1.state, "draft")
 
-    def test_sort_billing_lines(self):
-        inv_a = self.create_invoice(
+    def test_account_billing_currency(self):
+        self.assertEqual(self.env.company.currency_id.id, self.currency_usd_id)
+        inv_1 = self.create_invoice(
             amount=100,
             currency_id=self.currency_eur_id,
             partner=self.partner_id.id,
+        )
+        inv_2 = inv_1.copy()
+        inv_2.invoice_date = fields.Date.today()
+        inv_2.action_post()
+        invoices = inv_1 + inv_2
+        action = invoices.action_create_billing()
+        customer_billing = self.billing_model.browse(action["res_id"])
+        self.assertEqual(customer_billing.currency_id.id, self.currency_eur_id)
+
+    def test_sort_billing_lines(self):
+        inv_a = self.create_invoice(
+            amount=100,
             invoice_date=fields.Date.from_string("2024-04-03"),
             invoice_date_due=fields.Date.from_string("2024-05-04"),
         )
         inv_b = self.create_invoice(
             amount=200,
-            currency_id=self.currency_eur_id,
-            partner=self.partner_id.id,
             invoice_date=fields.Date.from_string("2024-04-01"),
             invoice_date_due=fields.Date.from_string("2024-05-02"),
         )
         inv_c = self.create_invoice(
             amount=300,
-            currency_id=self.currency_eur_id,
-            partner=self.partner_id.id,
             invoice_date=fields.Date.from_string("2024-04-02"),
             invoice_date_due=fields.Date.from_string("2024-05-01"),
         )
         inv_d = self.create_invoice(
             amount=400,
-            currency_id=self.currency_eur_id,
-            partner=self.partner_id.id,
             invoice_date=fields.Date.from_string("2024-04-02"),
             invoice_date_due=fields.Date.from_string("2024-05-01"),
         )
