@@ -14,6 +14,25 @@ class AccountMove(models.Model):
         readonly=False,
         help="If selected, the invoice is excluded from the billing process.",
     )
+    # TODO: This field should be moved to account_billing module.
+    billing_line_ids = fields.One2many(
+        comodel_name="account.billing.line",
+        inverse_name="move_id",
+        string="Billing Lines",
+    )
+    billing_id = fields.Many2one(
+        comodel_name="account.billing",
+        compute="_compute_billing_id",
+        store=True,
+    )
+
+    @api.depends("billing_line_ids", "billing_line_ids.billing_id.state")
+    def _compute_billing_id(self):
+        for move in self:
+            valid_billings = move.billing_line_ids.mapped("billing_id").filtered(
+                lambda b: b.state != "cancel"
+            )
+            move.billing_id = valid_billings[:1]
 
     @api.depends("partner_id")
     def _compute_is_not_for_billing(self):

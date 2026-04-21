@@ -246,3 +246,18 @@ class TestSummaryInvoice(TransactionCase):
         self.assertFalse(invoice.is_not_for_billing)
         invoice.partner_id = self.partner
         self.assertTrue(invoice.is_not_for_billing)
+
+    def test_compute_billing_id(self):
+        inv1 = self._create_invoice(100, self.tax_10)
+        inv2 = self._create_invoice(200, self.tax_10)
+        invoices = inv1 + inv2
+        self.assertFalse(inv1.billing_id)
+        self.assertFalse(inv2.billing_id)
+        action = invoices.action_create_billing()
+        billing = self.env["account.billing"].browse(action["res_id"])
+        billing.with_company(self.company).validate_billing()
+        self.assertEqual(inv1.billing_id, billing)
+        self.assertEqual(inv2.billing_id, billing)
+        billing.action_cancel()
+        self.assertFalse(inv1.billing_id)
+        self.assertFalse(inv2.billing_id)
