@@ -11,7 +11,7 @@
                         name="report_positioned_image_ids"
                         nolabel="1"
                         context="{'default_company_id': id}"
-                        domain="[('company_id', '=', id)]"
+                        domain="['|', ('company_id', '=', id), ('company_id', '=', False)]"
                     >
                         <list editable="bottom">
                             <field name="name" />
@@ -26,11 +26,7 @@
                             <field name="height" string="Height (mm)" />
                             <field name="respect_image_ratio" />
                             <field name="first_page_only" />
-                            <field
-                                name="company_id"
-                                column_invisible="1"
-                                required="1"
-                            />
+                            <field name="company_id" column_invisible="1" />
                         </list>
                     </field>
                 </page>
