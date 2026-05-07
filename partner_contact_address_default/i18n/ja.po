@@ -6,12 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"PO-Revision-Date: 2025-12-09 03:42+0000\n"
+"Last-Translator: Ryoko Tsuda <ryoko@quartile.co>\n"
+"Language-Team: none\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.10.4\n"
 
 #. module: partner_contact_address_default
 #: model:ir.model,name:partner_contact_address_default.model_res_company
@@ -26,7 +29,7 @@ msgstr ""
 #. module: partner_contact_address_default
 #: model:ir.model,name:partner_contact_address_default.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "連絡先"
 
 #. module: partner_contact_address_default
 #: model:ir.model.fields,field_description:partner_contact_address_default.field_res_company__contact_address_default_allow_all_partners
@@ -38,12 +41,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:partner_contact_address_default.field_res_partner__partner_contact_id
 #: model:ir.model.fields,field_description:partner_contact_address_default.field_res_users__partner_contact_id
 msgid "Default contact"
-msgstr ""
+msgstr "デフォルト連絡先"
 
 #. module: partner_contact_address_default
 #: model_terms:ir.ui.view,arch_db:partner_contact_address_default.view_partner_form
 msgid "Force addresses"
-msgstr ""
+msgstr "住所を強制設定"
 
 #. module: partner_contact_address_default
 #: model_terms:ir.ui.view,arch_db:partner_contact_address_default.res_config_settings_view_form
@@ -56,7 +59,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:partner_contact_address_default.field_res_partner__partner_invoice_id
 #: model:ir.model.fields,field_description:partner_contact_address_default.field_res_users__partner_invoice_id
 msgid "Invoice address"
-msgstr ""
+msgstr "請求先"
 
 #. module: partner_contact_address_default
 #: model:ir.model.fields,field_description:partner_contact_address_default.field_res_partner__partner_contact_domain
@@ -80,11 +83,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:partner_contact_address_default.field_res_partner__partner_delivery_id
 #: model:ir.model.fields,field_description:partner_contact_address_default.field_res_users__partner_delivery_id
 msgid "Shipping address"
-msgstr ""
+msgstr "配送先"
 
 #. module: partner_contact_address_default
 #: model_terms:ir.ui.view,arch_db:partner_contact_address_default.view_partner_form
 msgid ""
 "You can force contact, delivery and invoice address for this contact.\n"
-"                            If you keep these fields empty, Odoo's default behavior will apply."
+"                            If you keep these fields empty, Odoo's default "
+"behavior will apply."
 msgstr ""
+"この連絡先に対して、連絡先、配送先、請求先を強制的に設定できます。\n"
+"これらのフィールドを空のままにすると、Odooのデフォルト動作が適用されます。"
