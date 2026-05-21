@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 {
     "name": "Sale Partner Shipping Default Partner Invoice",
+    "summary": "Set invoice address based on shipping address for sales orders",
     "author": "Quartile, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/sale-workflow",
     "category": "Sales",
