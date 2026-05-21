@@ -232,3 +232,43 @@ class TestReportPositionedImage(TransactionCase):
             self.company_b
         )._get_positioned_image_configs()
         self.assertEqual(len(configs_b), 1)
+
+    def test_company_id_onchange_with_context(self):
+        image = (
+            self.env["report.positioned.image"]
+            .with_context(default_company_id=self.company_a.id)
+            .new(
+                {
+                    "name": "Test Image",
+                    "image": self.test_image,
+                    "width": 10.0,
+                    "height": 10.0,
+                    "company_id": self.company_a.id,
+                }
+            )
+        )
+        image.company_id = self.company_b
+        result = image._onchange_company_id()
+        self.assertIsNotNone(result)
+        self.assertIn("warning", result)
+        self.assertEqual(image.company_id, self.company_a)
+        image.company_id = self.company_a
+        result = image._onchange_company_id()
+        self.assertIsNone(result)
+        self.assertEqual(image.company_id, self.company_a)
+        image.company_id = False
+        result = image._onchange_company_id()
+        self.assertIsNone(result)
+        self.assertFalse(image.company_id)
+        image_no_context = self.env["report.positioned.image"].new(
+            {
+                "name": "Free Image",
+                "image": self.test_image,
+                "width": 10.0,
+                "height": 10.0,
+                "company_id": self.company_b.id,
+            }
+        )
+        result = image_no_context._onchange_company_id()
+        self.assertIsNone(result)
+        self.assertEqual(image_no_context.company_id, self.company_b)
