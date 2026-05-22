@@ -22,42 +22,6 @@ class IrActionsReport(models.Model):
         string="Report Images",
     )
 
-    def _render_qweb_pdf(self, report_ref, res_ids=None, data=None):
-        """Set company context so _get_positioned_image_configs uses the
-        correct company.
-        """
-        company = self._get_report_company(res_ids)
-        return super(IrActionsReport, self.with_company(company))._render_qweb_pdf(
-            report_ref, res_ids, data
-        )
-
-    def _prepare_html(self, html, report_model=False):
-        image_configs = self._get_positioned_image_configs()
-        if not image_configs:
-            return super()._prepare_html(html, report_model=report_model)
-        result = super()._prepare_html(html, report_model=report_model)
-        if not isinstance(result, tuple):
-            return result
-        bodies, res_ids, header, footer, specific_paperformat_args = result
-        if image_configs:
-            header = self._inject_images_into_header(header, image_configs)
-        return bodies, res_ids, header, footer, specific_paperformat_args
-
-    def _inject_images_into_header(self, header, image_configs):
-        image_html = self._build_image_html(image_configs)
-        return self._insert_html_into_header(header, image_html)
-
-    def _insert_html_into_header(self, header, html_to_inject):
-        if Markup("</body>") in header:
-            return header.replace(
-                Markup("</body>"), html_to_inject + Markup("</body>"), 1
-            )
-        if Markup("<body>") in header:
-            return header.replace(
-                Markup("<body>"), Markup("<body>") + html_to_inject, 1
-            )
-        return header + html_to_inject
-
     @staticmethod
     def _build_image_html(images):
         parts = []
@@ -85,15 +49,20 @@ class IrActionsReport(models.Model):
             )
         return Markup("".join(parts))
 
-    def _get_report_company(self, res_ids):
-        if not res_ids or not self.model:
-            return self.env.company
-        model = self.env[self.model]
-        if "company_id" not in model._fields:
-            return self.env.company
-        records = model.browse(res_ids).exists()
-        companies = records.mapped("company_id")
-        return companies[0] if len(companies) == 1 else self.env.company
+    def _insert_html_into_header(self, header, html_to_inject):
+        if Markup("</body>") in header:
+            return header.replace(
+                Markup("</body>"), html_to_inject + Markup("</body>"), 1
+            )
+        if Markup("<body>") in header:
+            return header.replace(
+                Markup("<body>"), Markup("<body>") + html_to_inject, 1
+            )
+        return header + html_to_inject
+
+    def _inject_images_into_header(self, header, image_configs):
+        image_html = self._build_image_html(image_configs)
+        return self._insert_html_into_header(header, image_html)
 
     def _get_positioned_image_configs(self):
         company = self.env.company
@@ -114,3 +83,33 @@ class IrActionsReport(models.Model):
             for img in images
             if img.image
         ]
+
+    def _prepare_html(self, html, report_model=False):
+        image_configs = self._get_positioned_image_configs()
+        if not image_configs:
+            return super()._prepare_html(html, report_model=report_model)
+        result = super()._prepare_html(html, report_model=report_model)
+        if not isinstance(result, tuple):
+            return result
+        bodies, res_ids, header, footer, specific_paperformat_args = result
+        header = self._inject_images_into_header(header, image_configs)
+        return bodies, res_ids, header, footer, specific_paperformat_args
+
+    def _get_report_company(self, res_ids):
+        if not res_ids or not self.model:
+            return self.env.company
+        model = self.env[self.model]
+        if "company_id" not in model._fields:
+            return self.env.company
+        records = model.browse(res_ids).exists()
+        companies = records.mapped("company_id")
+        return companies[0] if len(companies) == 1 else self.env.company
+
+    def _render_qweb_pdf(self, report_ref, res_ids=None, data=None):
+        """Set company context so _get_positioned_image_configs uses the
+        correct company.
+        """
+        company = self._get_report_company(res_ids)
+        return super(IrActionsReport, self.with_company(company))._render_qweb_pdf(
+            report_ref, res_ids, data
+        )
