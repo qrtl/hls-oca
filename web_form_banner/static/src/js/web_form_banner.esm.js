@@ -1,4 +1,3 @@
-/** @odoo-module **/
 // Copyright 2025 Quartile (https://www.quartile.co)
 // License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
@@ -30,19 +29,24 @@ const safe = async (fn, fb) => {
     return fb;
 };
 
-/* eslint-disable no-inline-comments */
 function normalizeValue(v) {
-    if (v === null || v === undefined) return v; // Null/undefined
+    // Null/undefined
+    if (v === null || v === undefined) return v;
     const t = typeof v;
     if (t === "string" || t === "number" || t === "boolean") return v;
     if (Array.isArray(v))
-        return v.length === 2 && typeof v[1] === "string" ? v[0] : [...v]; // M2o id or cloned m2m ids
+        // M2o id or cloned m2m ids
+        return v.length === 2 && typeof v[1] === "string" ? v[0] : [...v];
     if (t === "object") {
-        if (typeof v.res_id === "number") return v.res_id; // M2o snapshot
-        if (typeof v.id === "number") return v.id; // M2o env
-        if (Array.isArray(v._currentIds)) return [...v._currentIds]; // M2m
+        // M2o snapshot
+        if (typeof v.res_id === "number") return v.res_id;
+        // M2o env
+        if (typeof v.id === "number") return v.id;
+        // M2m
+        if (Array.isArray(v._currentIds)) return [...v._currentIds];
     }
-    return undefined; // Ignore others (e.g., command lists)
+    // Ignore others (e.g., command lists)
+    return undefined;
 }
 function shrink(data) {
     const out = {};
