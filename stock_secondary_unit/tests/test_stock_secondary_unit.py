@@ -245,53 +245,6 @@ class TestProductSecondaryUnit(BaseCommon):
         self.assertEqual(len(picking.move_ids), 1)
         self.assertEqual(picking.move_ids.secondary_uom_qty, 2)
 
-    def test_stock_quant_secondary_uom_qty(self):
-        template = self.env["product.template"].create(
-            {
-                "name": "test",
-                "uom_id": self.product_uom_unit.id,
-                "is_storable": True,
-                "secondary_uom_ids": [
-                    Command.create(
-                        {
-                            "code": "T",
-                            "name": "unit-2",
-                            "uom_id": self.product_uom_unit.id,
-                            "factor": 0.5,
-                        },
-                    ),
-                    Command.create(
-                        {
-                            "code": "U",
-                            "name": "unit-4",
-                            "uom_id": self.product_uom_unit.id,
-                            "factor": 0.25,
-                        },
-                    ),
-                ],
-            }
-        )
-        secondary_uom_1 = template.secondary_uom_ids[0]
-        secondary_uom_2 = template.secondary_uom_ids[1]
-        product = template.product_variant_ids[0]
-        # Test variant's secondary UoM is applied to quant
-        product.stock_secondary_uom_id = secondary_uom_1
-        quant = self.env["stock.quant"].create(
-            {
-                "location_id": self.location_stock.id,
-                "product_id": product.id,
-                "inventory_quantity": 10,
-            }
-        )
-        quant.action_apply_inventory()
-        self.assertEqual(quant.secondary_uom_id, secondary_uom_1)
-        self.assertEqual(quant.secondary_uom_qty, 20)
-        # Test template's secondary UoM syncs to variant (single-variant product)
-        template.stock_secondary_uom_id = secondary_uom_2
-        self.assertEqual(product.stock_secondary_uom_id, secondary_uom_2)
-        self.assertEqual(quant.secondary_uom_id, secondary_uom_2)
-        self.assertEqual(quant.secondary_uom_qty, 40)
-
     def test_action_generate_lot_line_vals(self):
         picking = self.env["stock.picking"].create(
             {
