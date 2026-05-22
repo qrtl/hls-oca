@@ -3,7 +3,7 @@
 {
     "name": "Purchase Order Secondary Unit",
     "summary": "Purchase product in a secondary unit",
-    "version": "18.0.1.2.1",
+    "version": "18.0.1.2.2",
     "development_status": "Beta",
     "category": "Purchase",
     "website": "https://github.com/OCA/purchase-workflow",
@@ -14,10 +14,8 @@
     "auto_install": True,
     "depends": ["purchase", "product_secondary_unit"],
     "data": [
-        "security/purchase_order_secondary_unit_groups.xml",
         "views/product_views.xml",
         "views/product_supplierinfo_views.xml",
-        "views/purchase_order_portal_templates.xml",
         "views/purchase_order_views.xml",
         "reports/purchase_order_templates.xml",
         "reports/purchase_quotation_templates.xml",
