@@ -58,6 +58,11 @@ msgid "Created on"
 msgstr "作成日"
 
 #. module: account_move_partner_bank
+#: model_terms:ir.ui.view,arch_db:account_move_partner_bank.view_partner_property_form
+msgid "Customer Invoices"
+msgstr "顧客請求書"
+
+#. module: account_move_partner_bank
 #: model:ir.model.fields,field_description:account_move_partner_bank.field_bank_account_source__display_name
 msgid "Display Name"
 msgstr "表示名"
@@ -66,6 +71,11 @@ msgstr "表示名"
 #: model:ir.model.fields,help:account_move_partner_bank.field_bank_account_source__bank_field_path
 msgid "Field path to res.partner.bank (e.g. partner_id.bank_account_id)."
 msgstr "銀行口座へのフィールドパス（例：partner_id.bank_account_id）"
+
+#. module: account_move_partner_bank
+#: model_terms:ir.ui.view,arch_db:account_move_partner_bank.view_partner_property_form
+msgid "From the parent company"
+msgstr "親会社から取得"
 
 #. module: account_move_partner_bank
 #: model:ir.model.fields,field_description:account_move_partner_bank.field_bank_account_source__id
@@ -116,16 +126,6 @@ msgstr "銀行口座提案元"
 #: model:ir.model.fields,field_description:account_move_partner_bank.field_res_users__bank_account_id
 msgid "Recipient Bank"
 msgstr "受取銀行口座"
-
-#. module: account_move_partner_bank
-#: model:ir.model.fields,help:account_move_partner_bank.field_res_partner__bank_account_id
-#: model:ir.model.fields,help:account_move_partner_bank.field_res_users__bank_account_id
-msgid ""
-"Select a bank account of the company's partner, or the current company's "
-"partner if no company is set."
-msgstr ""
-"会社の取引先の銀行口座を選択します。会社が設定されていない場合は、現在の会社の"
-"取引先の銀行口座を選択します。"
 
 #. module: account_move_partner_bank
 #: model:ir.model.fields,field_description:account_move_partner_bank.field_bank_account_source__sequence

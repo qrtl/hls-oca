@@ -8,11 +8,7 @@ class ResPartner(models.Model):
     _name = "res.partner"
     _inherit = ["res.partner", "bank.account.mixin"]
 
-    bank_account_id = fields.Many2one(
-        company_dependent=True,
-        help="Select a bank account of the company's partner, or the current company's "
-        "partner if no company is set.",
-    )
+    bank_account_id = fields.Many2one(company_dependent=True)
 
     @api.depends_context("company")
     @api.depends("company_id")

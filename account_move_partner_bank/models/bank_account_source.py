@@ -55,6 +55,10 @@ class BankAccountSource(models.Model):
     def get_bank_for_record(self, record):
         """Find bank from sources for the given record."""
         record.ensure_one()
+        if "company_id" in record._fields and record.company_id:
+            # The bank account fields in the path may be company-dependent (as on
+            # res.partner), so resolve them in the company of the record.
+            record = record.with_company(record.company_id)
         sources = self.filtered(lambda s: s.source_model_id.model == record._name)
         for source in sources:
             bank = attrgetter(source.bank_field_path)(record) or False

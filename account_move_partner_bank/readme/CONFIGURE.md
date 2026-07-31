@@ -6,6 +6,11 @@ To set up a bank account for a partner:
   linked to that company’s partner. If the partner has no company set,
   you can only select a bank account linked to the current company’s
   partner. This is a company-dependent field.
+  The field can be set on a child contact as well, so that a contact can be
+  invoiced with a bank account of its own (e.g. a branch that collects on a
+  different account than its head office). Whether the bank account of the parent
+  company applies to its child contacts depends on the bank account sources
+  configured below.
 
 To set up a bank account for a sales team:
 
@@ -26,3 +31,10 @@ To use bank accounts in invoices:
 
 The bank account from the record with the highest priority (lowest sequence number) will be used first
 when assigning the bank on invoices. If no value is found, the system proceeds to the next record, and so on.
+
+Sources can therefore be combined to let the bank account of a company apply to the
+invoices of its child contacts, while a contact that has its own bank account still
+takes precedence. To do so, configure the following two sources on Account Move:
+
+- partner_id.bank_account_id, with the lower sequence number.
+- commercial_partner_id.bank_account_id, with the higher sequence number.

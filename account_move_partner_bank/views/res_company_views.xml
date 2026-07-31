@@ -14,7 +14,7 @@
                                 <field name="source_model_id" />
                                 <field
                                     name="bank_field_path"
-                                    placeholder="e.g. partner_id.bank_account_id"
+                                    placeholder="e.g. partner_id.commercial_partner_id.bank_account_id"
                                 />
                             </list>
                         </field>
