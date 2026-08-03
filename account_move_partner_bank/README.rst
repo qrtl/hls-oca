@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 =========================
 Account Move Partner Bank
 =========================
@@ -17,7 +13,7 @@ Account Move Partner Bank
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Faccount--invoicing-lightgray.png?logo=github
@@ -59,13 +55,12 @@ To set up a bank account for a partner:
    the partner has a company set, you can only select a bank account
    linked to that company’s partner. If the partner has no company set,
    you can only select a bank account linked to the current company’s
-   partner. This is a company-dependent field. As with the other partner
-   accounting settings, the field is normally set on the commercial
-   entity, and it applies to all of its child contacts. A child contact
-   can still be given its own bank account (e.g. a branch that collects
-   on a different account than its head office): set the field on the
-   contact itself, and leave it empty to keep using the bank account of
-   the commercial entity.
+   partner. This is a company-dependent field. The field can be set on a
+   child contact as well, so that a contact can be invoiced with a bank
+   account of its own (e.g. a branch that collects on a different
+   account than its head office). Whether the bank account of the parent
+   company applies to its child contacts depends on the bank account
+   sources configured below.
 
 To set up a bank account for a sales team:
 
@@ -84,18 +79,20 @@ To use bank accounts in invoices:
       resolved (e.g., Account Move).
    -  Bank Field Path: Enter the dot-path from the source model to a
       bank account (res.partner.bank), for example
-      commercial_partner_id.bank_account_id or team_id.bank_account_id.
+      partner_id.bank_account_id or team_id.bank_account_id.
 
 The bank account from the record with the highest priority (lowest
 sequence number) will be used first when assigning the bank on invoices.
 If no value is found, the system proceeds to the next record, and so on.
 
-Use commercial_partner_id.bank_account_id (instead of
-partner_id.bank_account_id) to resolve the partner's bank account from
-its commercial entity, so that the invoices of the child contacts of a
-company also get the bank account set on that company. To let a child
-contact take precedence with its own bank account, add
-partner_id.bank_account_id as a source with a lower sequence number.
+Sources can therefore be combined to let the bank account of a company
+apply to the invoices of its child contacts, while a contact that has
+its own bank account still takes precedence. To do so, configure the
+following two sources on Account Move:
+
+-  partner_id.bank_account_id, with the lower sequence number.
+-  commercial_partner_id.bank_account_id, with the higher sequence
+   number.
 
 Bug Tracker
 ===========
