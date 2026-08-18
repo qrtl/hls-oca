@@ -36,6 +36,19 @@ class ReportPositionedImage(models.Model):
     def _default_company_id(self):
         return self.env.context.get("default_company_id")
 
+    @api.constrains("pos_top", "pos_left", "width", "height")
+    def _check_positive_values(self):
+        """Ensure position and dimension fields have positive values."""
+        for record in self:
+            if record.pos_top < 0:
+                raise ValidationError(_("Top position must be a positive value."))
+            if record.pos_left < 0:
+                raise ValidationError(_("Left position must be a positive value."))
+            if record.width <= 0:
+                raise ValidationError(_("Width must be greater than zero."))
+            if record.height <= 0:
+                raise ValidationError(_("Height must be greater than zero."))
+
     def _get_aspect_ratio(self):
         """Get image aspect ratio (width/height)."""
         if not self.image:
@@ -83,15 +96,21 @@ class ReportPositionedImage(models.Model):
                 self.height * ratio, 2
             )
 
-    @api.constrains("pos_top", "pos_left", "width", "height")
-    def _check_positive_values(self):
-        """Ensure position and dimension fields have positive values."""
-        for record in self:
-            if record.pos_top < 0:
-                raise ValidationError(_("Top position must be a positive value."))
-            if record.pos_left < 0:
-                raise ValidationError(_("Left position must be a positive value."))
-            if record.width <= 0:
-                raise ValidationError(_("Width must be greater than zero."))
-            if record.height <= 0:
-                raise ValidationError(_("Height must be greater than zero."))
+    @api.onchange("company_id")
+    def _onchange_company_id(self):
+        """Prevent assigning to a different company when created from company form."""
+        default_company_id = self.env.context.get("default_company_id")
+        if not default_company_id:
+            return
+        if self.company_id and self.company_id.id != default_company_id:
+            self.company_id = default_company_id
+            return {
+                "warning": {
+                    "title": _("Company Assignment"),
+                    "message": _(
+                        "You cannot assign this image to a different company. "
+                        "Please use the dedicated wizard to assign images to other "
+                        "companies."
+                    ),
+                }
+            }
