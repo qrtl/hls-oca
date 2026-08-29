@@ -55,7 +55,6 @@ class QwebFieldOptions(models.Model):
     digits = fields.Integer()
     company_id = fields.Many2one("res.company", string="Company")
     domain = fields.Char(
-        "Additional Conditions",
         help="Optional domain for additional filtering conditions.\n"
         "This is evaluated in addition to UoM/Currency conditions.\n"
         "Examples:\n"
