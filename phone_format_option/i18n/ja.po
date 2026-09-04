@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 02:35+0000\n"
-"PO-Revision-Date: 2026-09-02 02:35+0000\n"
+"POT-Creation-Date: 2026-09-04 02:54+0000\n"
+"PO-Revision-Date: 2026-09-04 02:54+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: phone_format_option
-#: model:ir.model.fields.selection,name:phone_format_option.selection__res_company__phone_format__raw
+#: model:ir.model.fields.selection,name:phone_format_option.selection__res_config_settings__phone_format__raw
 msgid "As entered (no formatting)"
 msgstr "入力値のまま(フォーマットなし)"
 
@@ -24,11 +24,6 @@ msgstr "入力値のまま(フォーマットなし)"
 #: model_terms:ir.ui.view,arch_db:phone_format_option.res_config_settings_view_form
 msgid "Choose the format applied to a contact's phone and mobile numbers."
 msgstr "連絡先の電話番号と携帯電話番号に適用するフォーマットを選択します。"
-
-#. module: phone_format_option
-#: model:ir.model,name:phone_format_option.model_res_company
-msgid "Companies"
-msgstr "会社"
 
 #. module: phone_format_option
 #: model:ir.model,name:phone_format_option.model_res_config_settings
@@ -41,26 +36,25 @@ msgid "Contact"
 msgstr "連絡先"
 
 #. module: phone_format_option
-#: model:ir.model.fields,help:phone_format_option.field_res_company__phone_format
 #: model:ir.model.fields,help:phone_format_option.field_res_config_settings__phone_format
 msgid ""
 "Format applied to the phone and mobile numbers of contacts. When set to "
-"National, contacts located in a different country from the company are still"
-" formatted in international format."
-msgstr "連絡先の電話番号と携帯電話番号に適用されるフォーマット。国内を選択した場合でも、会社と異なる国に所在する連絡先には国際フォーマットが適用されます。"
+"National, contacts located in a different country from your company are "
+"still formatted in international format."
+msgstr ""
+"連絡先の電話番号と携帯電話番号に適用されるフォーマット。国内を選択した場合でも、会社と異なる国に所在する連絡先には国際フォーマットが適用されます。"
 
 #. module: phone_format_option
-#: model:ir.model.fields.selection,name:phone_format_option.selection__res_company__phone_format__international
+#: model:ir.model.fields.selection,name:phone_format_option.selection__res_config_settings__phone_format__international
 msgid "International (with country code)"
 msgstr "国際(国名コードあり)"
 
 #. module: phone_format_option
-#: model:ir.model.fields.selection,name:phone_format_option.selection__res_company__phone_format__national
+#: model:ir.model.fields.selection,name:phone_format_option.selection__res_config_settings__phone_format__national
 msgid "National (without country code)"
 msgstr "国内(国名コードなし)"
 
 #. module: phone_format_option
-#: model:ir.model.fields,field_description:phone_format_option.field_res_company__phone_format
 #: model:ir.model.fields,field_description:phone_format_option.field_res_config_settings__phone_format
 msgid "Phone Format"
 msgstr "電話番号フォーマット"

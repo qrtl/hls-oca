@@ -18,7 +18,7 @@ class ResPartner(models.Model):
         self._format_phone_number_field("mobile")
 
     def _format_phone_number_field(self, fname):
-        """Reformat ``fname`` using the company-configured format. The actual
+        """Reformat ``fname`` using the configured format. The actual
         formatting is delegated to ``phone_validation``'s ``_phone_format``;
         this module only decides which ``force_format`` to apply."""
         if not self[fname]:
@@ -32,8 +32,13 @@ class ResPartner(models.Model):
 
     def _get_phone_force_format(self):
         self.ensure_one()
-        company = self.company_id or self.env.company
-        partner_country = self.country_id or company.country_id
-        if company.phone_format == "NATIONAL" and partner_country != company.country_id:
+        phone_format = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("phone_format_option.phone_format", "INTERNATIONAL")
+        )
+        company_country = self.env.company.country_id
+        partner_country = self.country_id or company_country
+        if phone_format == "NATIONAL" and partner_country != company_country:
             return "INTERNATIONAL"
-        return company.phone_format
+        return phone_format

@@ -16,6 +16,11 @@ class TestPhoneFormatOption(TransactionCase):
         cls.company.country_id = cls.country_jp
         cls.partner = cls.env["res.partner"].create({"name": "Test Partner"})
 
+    def _set_phone_format(self, value):
+        self.env["ir.config_parameter"].set_param(
+            "phone_format_option.phone_format", value
+        )
+
     def _format_phone(self, country, number, fname="phone"):
         """Set the partner country and phone number through the form, so that
         the onchange is triggered, and return the resulting value."""
@@ -28,26 +33,26 @@ class TestPhoneFormatOption(TransactionCase):
         return result
 
     def test_raw_is_not_reformatted(self):
-        self.company.phone_format = "RAW"
+        self._set_phone_format("RAW")
         result = self._format_phone(self.country_jp, "090-1234-5678")
         self.assertEqual(result, "090-1234-5678")
 
     def test_national_drops_country_code_for_same_country(self):
-        self.company.phone_format = "NATIONAL"
+        self._set_phone_format("NATIONAL")
         result = self._format_phone(self.country_jp, "+81 90-1234-5678")
         self.assertFalse(result.startswith("+"))
 
     def test_national_keeps_country_code_for_other_country(self):
-        self.company.phone_format = "NATIONAL"
+        self._set_phone_format("NATIONAL")
         result = self._format_phone(self.country_us, "+1 202-555-0143")
         self.assertTrue(result.startswith("+1"))
 
     def test_international_keeps_country_code(self):
-        self.company.phone_format = "INTERNATIONAL"
+        self._set_phone_format("INTERNATIONAL")
         result = self._format_phone(self.country_jp, "090-1234-5678")
         self.assertTrue(result.startswith("+81"))
 
     def test_mobile_is_formatted(self):
-        self.company.phone_format = "NATIONAL"
+        self._set_phone_format("NATIONAL")
         result = self._format_phone(self.country_jp, "+81 90-1234-5678", fname="mobile")
         self.assertFalse(result.startswith("+"))
