@@ -1,0 +1,36 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_valuation_layer_removal_date
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-07 09:04+0000\n"
+"PO-Revision-Date: 2026-09-07 09:04+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_valuation_layer_removal_date
+#: model:ir.model.fields,field_description:stock_valuation_layer_removal_date.field_stock_valuation_layer__removal_date
+#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_removal_date.stock_valuation_layer_view_search
+msgid "Removal Date"
+msgstr "払出期限"
+
+#. module: stock_valuation_layer_removal_date
+#: model:ir.model.fields,help:stock_valuation_layer_removal_date.field_stock_valuation_layer__removal_date
+msgid ""
+"Removal date of the lot/serial of the stock move. When the move holds "
+"several lots, the earliest removal date is kept."
+msgstr ""
+"在庫移動のロット/シリアルの払出期限。在庫移動が複数のロットを含む場合は、最も早"
+"い払出期限が採用されます。"
+
+#. module: stock_valuation_layer_removal_date
+#: model:ir.model,name:stock_valuation_layer_removal_date.model_stock_valuation_layer
+msgid "Stock Valuation Layer"
+msgstr "在庫評価レイヤ"
