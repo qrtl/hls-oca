@@ -32,6 +32,12 @@ msgid "# of Invoices"
 msgstr ""
 
 #. module: account_billing
+#. odoo-python
+#: code:addons/account_billing/models/account_billing.py:0
+msgid "%s"
+msgstr ""
+
+#. module: account_billing
 #: model:ir.actions.report,print_report_name:account_billing.report_account_billing
 msgid ""
 "'BILL-%s%s' % (object.name, object.state == 'draft' and '-draft' or '')"
@@ -106,6 +112,7 @@ msgid ""
 msgstr ""
 
 #. module: account_billing
+#: model:ir.model.fields,field_description:account_billing.field_account_billing__amount_due
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__amount_residual
 msgid "Amount Due"
 msgstr ""
@@ -171,6 +178,8 @@ msgid "Billing Line"
 msgstr ""
 
 #. module: account_billing
+#: model:ir.model.fields,field_description:account_billing.field_account_bank_statement_line__billing_line_ids
+#: model:ir.model.fields,field_description:account_billing.field_account_move__billing_line_ids
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Billing Lines"
 msgstr ""
@@ -193,6 +202,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_billing/models/account_billing.py:0
 msgid "Billing is reset to draft"
+msgstr ""
+
+#. module: account_billing
+#: model:ir.model.fields,help:account_billing.field_account_bank_statement_line__billing_line_ids
+#: model:ir.model.fields,help:account_billing.field_account_move__billing_line_ids
+msgid "Billing lines that reference this invoice"
 msgstr ""
 
 #. module: account_billing
@@ -491,6 +506,11 @@ msgid "Please select invoices with same partner"
 msgstr ""
 
 #. module: account_billing
+#: model:ir.model.fields,field_description:account_billing.field_account_billing__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: account_billing
 #: model:ir.actions.server,name:account_billing.action_account_billing_from_list
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Register Payment"
@@ -508,6 +528,11 @@ msgid "Search Billings"
 msgstr ""
 
 #. module: account_billing
+#: model:ir.model.fields,field_description:account_billing.field_account_billing_line__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: account_billing
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Set to Draft"
 msgstr ""
@@ -517,6 +542,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_billing.field_account_billing_line__state
 #: model_terms:ir.ui.view,arch_db:account_billing.view_billing_search
 msgid "Status"
+msgstr ""
+
+#. module: account_billing
+#: model:ir.model.fields,field_description:account_billing.field_account_billing__amount_tax
+msgid "Tax Amount"
+msgstr ""
+
+#. module: account_billing
+#: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_tree
+#: model_terms:ir.ui.view,arch_db:account_billing.view_account_supplier_billing_tree
+msgid "Tax Excluded"
 msgstr ""
 
 #. module: account_billing
@@ -547,6 +583,7 @@ msgid "Total"
 msgstr ""
 
 #. module: account_billing
+#: model:ir.model.fields,field_description:account_billing.field_account_billing__amount_total
 #: model_terms:ir.ui.view,arch_db:account_billing.view_account_billing_form
 msgid "Total Amount"
 msgstr ""
@@ -559,6 +596,11 @@ msgstr ""
 #. module: account_billing
 #: model:ir.model.fields,help:account_billing.field_account_billing__bill_type
 msgid "Type of invoice"
+msgstr ""
+
+#. module: account_billing
+#: model:ir.model.fields,field_description:account_billing.field_account_billing__amount_untaxed
+msgid "Untaxed Amount"
 msgstr ""
 
 #. module: account_billing
