@@ -9,3 +9,6 @@ The module supports two types of images:
   included in reports by enabling the *Include Company Images* option
 - *Report-specific Images*: Configure specific images for individual reports,
   filtered by company context and always shown when configured
+
+Images can be assigned to a specific company or left as shared records
+(without company assignment) for use across multiple companies

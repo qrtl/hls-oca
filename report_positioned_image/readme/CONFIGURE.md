@@ -14,6 +14,8 @@ To configure company-level images:
       automatically adjusts the other dimension to maintain aspect ratio.
       Uncheck for manual control of both dimensions.
     - *First Page Only*: Check to show only on the first page
+    - *Company*: Automatically set to the current company when creating from
+      the company form. To create shared images, leave empty.
 
 To configure report-specific images:
 
