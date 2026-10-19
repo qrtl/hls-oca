@@ -84,8 +84,12 @@ class StockMoveLine(models.Model):
         res = super().default_get(fields_list)
         move_id = self.env.context.get("default_move_id") or res.get("move_id")
         if move_id and not res.get("secondary_uom_id"):
-            move = self.env["stock.move"].browse(move_id)
-            if move.secondary_uom_id:
+            # default_move_id may resolve to the MO id instead of the stock.move id
+            # when saving the detailed operations dialog from an MO component line
+            # (https://github.com/odoo/odoo/issues/261740); a wrong default here
+            # should be harmless as it only pre-fills the line
+            move = self.env["stock.move"].browse(move_id).exists()
+            if move and move.secondary_uom_id:
                 res["secondary_uom_id"] = move.secondary_uom_id.id
         return res
 

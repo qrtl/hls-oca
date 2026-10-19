@@ -8,29 +8,30 @@ from odoo.exceptions import UserError
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    billing_line_ids = fields.One2many(
+        comodel_name="account.billing.line",
+        inverse_name="move_id",
+        string="Billing Lines",
+        help="Billing lines that reference this invoice",
+    )
     billing_ids = fields.Many2many(
         comodel_name="account.billing",
         string="Billings",
         compute="_compute_billing_ids",
+        groups="account.group_account_invoice",
         help="Relationship between invoice and billing",
     )
 
     def _compute_billing_ids(self):
-        bl_obj = self.env["account.billing.line"]
         for rec in self:
-            billing_lines = bl_obj.search([("move_id", "=", rec.id)])
-            rec.billing_ids = billing_lines.mapped("billing_id")
+            rec.billing_ids = rec.billing_line_ids.mapped("billing_id")
 
     def _get_billing_type(self):
         outbound_types = {"out_invoice", "out_refund", "out_receipt"}
         move_types = set(self.mapped("move_type"))
         return "out_invoice" if move_types.issubset(outbound_types) else "in_invoice"
 
-    def _sort_for_billing(self, date_field):
-        return self.sorted(key=lambda m: (m[date_field], m.name, m.id))
-
     def _create_billing(self, partner):
-        date_field = self.env["account.billing"]._get_default_threshold_date_type()
         billing = self.env["account.billing"].create(
             {
                 "partner_id": partner.id,
@@ -46,11 +47,10 @@ class AccountMove(models.Model):
                             * (-1 if m.move_type in ["out_refund", "in_refund"] else 1),
                         }
                     )
-                    for m in self._sort_for_billing(date_field)
+                    for m in self
                 ],
             }
         )
-        billing._sort_billing_lines()
         return billing
 
     def action_create_billing(self):

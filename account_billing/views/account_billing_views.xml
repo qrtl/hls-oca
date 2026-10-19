@@ -10,6 +10,8 @@
             >
                 <field name="name" />
                 <field name="partner_id" string="Customer" />
+                <field name="amount_total" />
+                <field name="amount_total_residual" />
                 <field name="date" />
                 <field name="threshold_date" />
                 <field name="payment_paid_all" />
@@ -34,6 +36,8 @@
             >
                 <field name="name" />
                 <field name="partner_id" string="Vendor" />
+                <field name="amount_total" />
+                <field name="amount_total_residual" />
                 <field name="date" />
                 <field name="threshold_date" />
                 <field name="payment_paid_all" />
@@ -145,7 +149,6 @@
                             class="oe_stat_button"
                             name="invoice_relate_billing_tree_view"
                             type="object"
-                            invisible="state != 'billed'"
                             icon="fa-pencil-square-o"
                         >
                             <field
@@ -198,7 +201,6 @@
                             />
                             <field name="billing_line_ids" readonly="state != 'draft'">
                                 <list name="billing" create="0" editable="bottom">
-                                    <field name="sequence" widget="handle" />
                                     <field name="move_id" column_invisible="1" />
                                     <field name="name" />
                                     <field name="invoice_date" />
@@ -231,6 +233,32 @@
                                     />
                                 </list>
                             </field>
+                            <group>
+                                <group class="oe_subtotal_footer">
+                                    <field
+                                        name="amount_untaxed"
+                                        widget="monetary"
+                                        readonly="1"
+                                    />
+                                    <field
+                                        name="amount_tax"
+                                        widget="monetary"
+                                        readonly="1"
+                                    />
+                                    <field
+                                        name="amount_total"
+                                        widget="monetary"
+                                        readonly="1"
+                                        class="fw-bold"
+                                    />
+                                    <field
+                                        name="amount_total_residual"
+                                        widget="monetary"
+                                        readonly="1"
+                                        class="fw-bold"
+                                    />
+                                </group>
+                            </group>
                             <group>
                                 <group>
                                     <separator string="Notes" />

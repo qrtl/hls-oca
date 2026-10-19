@@ -10,7 +10,7 @@
                 <strong>ETA:</strong>
                 <p t-field="o.date_eta" class="m-0" />
             </div>
-            <div t-if="o.shipping_schedule_note" class="col-6">
+            <div t-if="o.shipping_schedule_note" class="col-8">
                 <strong>Shipping Schedule Note:</strong>
                 <p
                     t-field="o.shipping_schedule_note"

@@ -1,8 +1,6 @@
 # Copyright 2019 Ecosoft Co., Ltd (https://ecosoft.co.th/)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html)
 
-from datetime import date
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
@@ -93,7 +91,7 @@ class AccountBilling(models.Model):
         selection=[("invoice_date_due", "Due Date"), ("invoice_date", "Invoice Date")],
         required=True,
         readonly=True,
-        default=lambda self: self._get_default_threshold_date_type(),
+        default="invoice_date_due",
         help="All invoices with date (threshold date type) before and equal to "
         "threshold date will be listed in billing lines",
     )
@@ -101,10 +99,26 @@ class AccountBilling(models.Model):
         compute="_compute_payment_paid_all",
         store=True,
     )
-
-    @api.model
-    def _get_default_threshold_date_type(self):
-        return "invoice_date_due"
+    amount_untaxed = fields.Monetary(
+        string="Untaxed Amount",
+        compute="_compute_tax_totals",
+        store=True,
+    )
+    amount_tax = fields.Monetary(
+        string="Tax Amount",
+        compute="_compute_tax_totals",
+        store=True,
+    )
+    amount_total = fields.Monetary(
+        string="Total Amount",
+        compute="_compute_tax_totals",
+        store=True,
+    )
+    amount_total_residual = fields.Monetary(
+        string="Total Amount Residual",
+        compute="_compute_amount_total_residual",
+        store=True,
+    )
 
     @api.depends("billing_line_ids.payment_state")
     def _compute_payment_paid_all(self):
@@ -116,35 +130,47 @@ class AccountBilling(models.Model):
                 line.payment_state == "paid" for line in rec.billing_line_ids
             )
 
+    def _get_moves_domain(self, date, types=False):
+        return [
+            ("partner_id", "=", self.partner_id.id),
+            ("state", "=", "posted"),
+            ("payment_state", "!=", "paid"),
+            ("currency_id", "=", self.currency_id.id),
+            (date, "<=", self.threshold_date),
+            ("move_type", "in", types),
+        ]
+
     def _get_moves(self, date, types=False):
-        moves = self.env["account.move"].search(
-            [
-                ("partner_id", "=", self.partner_id.id),
-                ("state", "=", "posted"),
-                ("payment_state", "!=", "paid"),
-                ("currency_id", "=", self.currency_id.id),
-                (date, "<=", self.threshold_date),
-                ("move_type", "in", types),
-            ]
-        )
-        return moves._sort_for_billing(self.threshold_date_type)
+        domain = self._get_moves_domain(date, types=types)
+        return self.env["account.move"].search(domain)
 
     def _compute_invoice_related_count(self):
         self.invoice_related_count = len(self.billing_line_ids)
 
-    @api.onchange("threshold_date_type")
-    def _onchange_threshold_date_type(self):
-        self._sort_billing_lines()
+    @api.depends("billing_line_ids.amount_residual")
+    def _compute_amount_total_residual(self):
+        for rec in self:
+            rec.amount_total_residual = sum(
+                rec.billing_line_ids.mapped("amount_residual")
+            )
 
-    def _sort_billing_lines(self):
-        if not self.billing_line_ids:
-            return
-        sorted_lines = self.billing_line_ids.sorted(
-            key=lambda x: (x.invoice_date or date.min, x.name or "", x.id)
-        )
-        for idx, line in enumerate(sorted_lines, start=1):
-            line.sequence = idx * 10
-        self.invalidate_recordset(["billing_line_ids"])
+    @api.depends(
+        "billing_line_ids.move_id.amount_untaxed", "billing_line_ids.move_id.amount_tax"
+    )
+    def _compute_tax_totals(self):
+        for bill in self:
+            bill.amount_untaxed = 0.0
+            bill.amount_tax = 0.0
+            bill.amount_total = 0.0
+
+            for line in bill.billing_line_ids:
+                sign = (
+                    -1 if line.move_id.move_type in ["out_refund", "in_refund"] else 1
+                )
+                bill.amount_untaxed += line.move_id.amount_untaxed * sign
+                bill.amount_tax += line.move_id.amount_tax * sign
+
+            bill.amount_total = bill.amount_untaxed + bill.amount_tax
 
     def name_get(self):
         result = [(billing.id, (billing.name or "Draft")) for billing in self]
@@ -234,15 +260,12 @@ class AccountBilling(models.Model):
         moves = self._get_moves(self.threshold_date_type, types)
         billing_line_dict = self._get_billing_line_dict(moves)
         self.billing_line_ids.create(billing_line_dict)
-        self._sort_billing_lines()
 
 
 class AccountBillingLine(models.Model):
     _name = "account.billing.line"
     _description = "Billing Line"
-    _order = "sequence, id"
 
-    sequence = fields.Integer(default=10)
     billing_id = fields.Many2one(comodel_name="account.billing")
     move_id = fields.Many2one(
         comodel_name="account.move",
@@ -264,11 +287,6 @@ class AccountBillingLine(models.Model):
     state = fields.Selection(related="move_id.state")
     payment_state = fields.Selection(related="move_id.payment_state")
 
-    @api.depends(
-        "billing_id.threshold_date_type",
-        "move_id.invoice_date",
-        "move_id.invoice_date_due",
-    )
     def _compute_invoice_date(self):
         for line in self:
             if line.billing_id.threshold_date_type == "invoice_date_due":

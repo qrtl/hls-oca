@@ -29,8 +29,7 @@ Stock Secondary Unit
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
 This module extends the functionality of stock module to allow define
-other units with their conversion factor. It also introduces a secondary
-UoM on stock quants and displays the corresponding converted quantity.
+other units with their conversion factor.
 
 **Table of contents**
 
@@ -87,9 +86,6 @@ Contributors
 -  Kitti Upariphutthiphong <kittiu@ecosoft.co.th>
 -  Pimolnat Suntian <pimolnats@ecosoft.co.th>
 -  Alan Ramos <alan.ramos@jarsa.com.mx>
--  `Quartile <https://www.quartile.co>`__:
-
-   -  Aung Ko Ko Lin
 
 Maintainers
 -----------

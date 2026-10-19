@@ -75,9 +75,9 @@ Authors
 Contributors
 ------------
 
--  Quartile <https://www.quartile.co>
+- Quartile <https://www.quartile.co>
 
-   -  Aung Ko Ko Lin
+  - Aung Ko Ko Lin
 
 Maintainers
 -----------
