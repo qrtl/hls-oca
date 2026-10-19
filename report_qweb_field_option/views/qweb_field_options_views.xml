@@ -32,6 +32,7 @@
                     name="domain"
                     widget="domain"
                     options="{'model': 'res_model_name'}"
+                    optional="hide"
                 />
                 <field
                     name="company_id"
