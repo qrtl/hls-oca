@@ -4,4 +4,5 @@ from . import stock_product_secondary_unit_mixin
 from . import product_product
 from . import product_template
 from . import stock_move
+from . import stock_rule
 from . import stock_quant

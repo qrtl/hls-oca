@@ -23,3 +23,7 @@ class ProductTemplate(models.Model):
 
     def _inverse_stock_secondary_uom_id(self):
         self._inverse_template_secondary_uom_field("stock_secondary_uom_id")
+
+    @api.onchange("stock_secondary_uom_id")
+    def _onchange_stock_secondary_uom_id(self):
+        return self._onchange_template_secondary_uom_field("stock_secondary_uom_id")
