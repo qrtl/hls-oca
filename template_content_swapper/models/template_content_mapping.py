@@ -113,6 +113,6 @@ class TemplateContentMapping(models.Model):
             "type": "ir.actions.act_window",
             "name": "Template Content Mappings",
             "res_model": "template.content.mapping",
-            "view_mode": "list",
+            "view_mode": "list,form",
             "context": {"multi_lang": multi_lang},
         }
