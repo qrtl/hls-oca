@@ -25,7 +25,7 @@
                 <setting
                     id="so_line_client_ref_policy"
                     company_dependent="1"
-                    string="Sales Order Line Customer Order Ref Policy"
+                    string="Sales Order Line Customer Order Ref Sync(chronization) Policy"
                     help="Select the policy to sync the customer order reference from the sales order to its lines."
                 >
                     <field name="so_line_client_ref_policy" widget="radio" />

@@ -17,7 +17,7 @@ class ResCompany(models.Model):
     client_order_ref_in_invoice_line_desc = fields.Boolean()
     so_line_client_ref_policy = fields.Selection(
         selection=REF_POLICY_SELECTION,
-        string="SO Line Customer Order Ref Policy",
+        string="SO Line Customer Order Ref Sync Policy",
         default="sync",
         required=True,
     )
