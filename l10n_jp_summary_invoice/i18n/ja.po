@@ -4,12 +4,13 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-09 10:03+0000\n"
-"PO-Revision-Date: 2026-04-09 10:03+0000\n"
+"POT-Creation-Date: 2025-03-24 02:50+0000\n"
+"PO-Revision-Date: 2025-03-24 02:50+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -58,7 +59,7 @@ msgstr "合計請求書"
 msgid ""
 "All invoices with date (threshold date type) before and equal to threshold "
 "date will be listed in billing lines"
-msgstr "閾日タイプの日付が閾日以前請求書が合計請求書明細行に追加されます"
+msgstr "閾日タイプの日付が閾日以前請求書が合計請求書明細行に追加されます。"
 
 #. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.bill_line_section_layout
@@ -83,12 +84,6 @@ msgstr "合計請求書作成済"
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.view_partner_property_form
 msgid "Billing"
 msgstr "合計請求書"
-
-#. module: l10n_jp_summary_invoice
-#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_bank_statement_line__billing_line_ids
-#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_move__billing_line_ids
-msgid "Billing Lines"
-msgstr "合計請求書明細"
 
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__tax_totals
@@ -188,7 +183,7 @@ msgstr "選択すると、合計請求書の明細行に販売オーダ番号が
 msgid ""
 "If not specified, the first bank account linked to the company will show in "
 "the report."
-msgstr "選択がない場合は、会社に紐づく1つ目の銀行口座が帳票に表示されます"
+msgstr "選択がない場合は、会社に紐づく1つ目の銀行口座がレポートに表示されます"
 
 #. module: l10n_jp_summary_invoice
 #: model:ir.model.fields,help:l10n_jp_summary_invoice.field_account_tax__rounding_adjustment
@@ -338,11 +333,6 @@ msgid "Tax Adjustment Entry"
 msgstr "消費税調整仕訳"
 
 #. module: l10n_jp_summary_invoice
-#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__amount_tax
-msgid "Tax Amount"
-msgstr "税額"
-
-#. module: l10n_jp_summary_invoice
 #: model:ir.model,name:l10n_jp_summary_invoice.model_account_tax_group
 msgid "Tax Group"
 msgstr "税グループ"
@@ -398,11 +388,6 @@ msgid "Total"
 msgstr "合計"
 
 #. module: l10n_jp_summary_invoice
-#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__amount_total
-msgid "Total Amount"
-msgstr "合計金額"
-
-#. module: l10n_jp_summary_invoice
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.view_account_billing_tree
 #: model_terms:ir.ui.view,arch_db:l10n_jp_summary_invoice.view_account_supplier_billing_tree
 msgid "Total Tax"
@@ -419,7 +404,16 @@ msgstr "税抜合計"
 msgid "Unit Price"
 msgstr "単価"
 
-#. module: l10n_jp_summary_invoice
-#: model:ir.model.fields,field_description:l10n_jp_summary_invoice.field_account_billing__amount_untaxed
-msgid "Untaxed Amount"
-msgstr "税抜金額"
+#, python-format
+#~ msgid "All invoices must be posted before validating the billing."
+#~ msgstr "すべての請求書が記帳済でなければ合計請求書は検証できません。"
+
+#~ msgid "E.g., Please find the invoice details below."
+#~ msgstr "例: 下記の通りご請求申し上げます。"
+
+#~ msgid "Partner"
+#~ msgstr "取引先"
+
+#, python-format
+#~ msgid "You cannot reset to draft an invoice that has been billed."
+#~ msgstr "合計請求書に追加した請求書はドラフトに戻せません。"

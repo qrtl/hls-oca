@@ -53,9 +53,17 @@
                 <field name="company_partner_id" invisible="1" />
                 <field name="remit_to_bank_id" invisible="bill_type != 'out_invoice'" />
                 <field name="report_subtitle" />
+                <field name="is_billing_sent" />
             </xpath>
             <xpath expr="//field[@name='date']" position="after">
                 <field name="date_due" invisible="bill_type != 'out_invoice'" />
+            </xpath>
+            <!-- Hide the standard totals footer, replaced below by one showing the
+                 tax totals widget, which breaks the amounts down per tax. This has to
+                 come first: the group added below carries the same class, and would
+                 otherwise be the one matched here. -->
+            <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='billing_line_ids']" position="after">
                 <group>
