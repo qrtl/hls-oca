@@ -3,7 +3,7 @@
 {
     "name": "Stock Move Actual Date",
     "summary": "Use actual dates on stock moves for accounting and valuation",
-    "version": "18.0.1.0.1",
+    "version": "18.0.1.1.0",
     "author": "Quartile, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/stock-logistics-workflow",
     "category": "Stock",
