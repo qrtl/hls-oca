@@ -83,6 +83,37 @@ class ImportCase(TransactionCase):
             "floyd.steward34.changed@example.com",
         )
 
+    def test_res_partner_one2many_lines(self):
+        """Match parents by ref and import their one2many lines."""
+        Partner = self.env["res.partner"]
+        self.env["base_import.match"].create(
+            {
+                "model_id": self.env.ref("base.model_res_partner").id,
+                "sequence": 1,
+                "field_ids": [
+                    (0, 0, {"field_id": self.env.ref("base.field_res_partner__ref").id})
+                ],
+            }
+        )
+        parent_1 = Partner.create({"name": "O2M Parent 1", "ref": "O2M-1"})
+        parent_2 = Partner.create({"name": "O2M Parent 2", "ref": "O2M-2"})
+        count_before = Partner.search_count([("ref", "like", "O2M-")])
+        record = self._base_import_record(
+            "res.partner",
+            data="O2M-1,Function 1,Child 1A\n,,Child 1B\nO2M-2,Function 2,Child 2A\n",
+        )
+        result = record.execute_import(
+            ["ref", "function", "child_ids/name"], [], OPTIONS
+        )
+        self.assertFalse(result["messages"])
+        self.assertEqual(Partner.search_count([("ref", "like", "O2M-")]), count_before)
+        self.assertEqual(parent_1.function, "Function 1")
+        self.assertEqual(
+            sorted(parent_1.child_ids.mapped("name")), ["Child 1A", "Child 1B"]
+        )
+        self.assertEqual(parent_2.function, "Function 2")
+        self.assertEqual(parent_2.child_ids.mapped("name"), ["Child 2A"])
+
     def test_res_partner_email(self):
         """Change name based on email."""
         record = self._base_import_record("res.partner", "res_partner_email")
@@ -211,6 +242,82 @@ class ImportCase(TransactionCase):
         # Should create a new record, not update the existing one
         self.assertEqual(count_after, count_before + 1)
         self.assertEqual(partner.name, original_name)
+
+    def test_match_only_subfield_ignored(self):
+        """A subfield path sent as match-only still imports its lines."""
+        parent = self.env["res.partner"].create({"name": "Subfield Parent"})
+        record = self._base_import_record(
+            "res.partner", data="Subfield Parent,Func,Child X\n"
+        )
+        options = dict(OPTIONS, import_match_only_fields=["name", "child_ids/name"])
+        result = record.execute_import(
+            ["name", "function", "child_ids/name"], [], options
+        )
+        self.assertFalse(result["messages"])
+        self.assertEqual(parent.function, "Func")
+        self.assertEqual(parent.child_ids.mapped("name"), ["Child X"])
+
+    def test_match_only_conversion_error_blocks(self):
+        """A match value that fails conversion blocks the import."""
+        company = self.env["res.partner"].create(
+            {"name": "Real Co", "is_company": True}
+        )
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Contact",
+                "ref": "R-1",
+                "parent_id": company.id,
+                "function": "Original",
+            }
+        )
+        record = self._base_import_record("res.partner", data="R-1,Typo Co,Changed\n")
+        options = dict(OPTIONS, import_match_only_fields=["ref", "parent_id"])
+        result = record.execute_import(["ref", "parent_id", "function"], [], options)
+        self.assertFalse(result["ids"])
+        self.assertEqual(result["messages"][0]["field"], "parent_id")
+        self.assertEqual(partner.function, "Original")
+
+    def test_match_only_error_row_names(self):
+        """Column errors are labelled with the imported name, not another column."""
+        self.env["res.partner"].create(
+            {"name": "Label Partner", "email": "label@example.com"}
+        )
+        record = self._base_import_record(
+            "res.partner", data="label@example.com,New Name,bogus\n"
+        )
+        options = dict(OPTIONS, import_match_only_fields=["email"])
+        result = record.execute_import(["email", "name", "type"], [], options)
+        self.assertFalse(result["ids"])
+        self.assertEqual(result["name"][0], "New Name")
+
+    def test_match_only_blocked_rolls_back_created(self):
+        """A blocked import does not keep related records it name-created."""
+        self.env["res.partner"].create({"name": "Leak", "email": "leak@example.com"})
+        record = self._base_import_record(
+            "res.partner",
+            data="leak@example.com,Leak Co A\nnope@example.com,Leak Co B\n",
+        )
+        options = dict(
+            OPTIONS,
+            import_match_only_fields=["email"],
+            name_create_enabled_fields={"parent_id": True},
+        )
+        result = record.execute_import(["email", "parent_id"], [], options)
+        self.assertFalse(result["ids"])
+        self.assertFalse(self.env["res.partner"].search([("name", "like", "Leak Co")]))
+
+    def test_match_only_ignored_with_id_column(self):
+        """With an ID column, match-only fields are imported as usual."""
+        deco_addict = self.env.ref("base.res_partner_2")
+        record = self._base_import_record(
+            "res.partner",
+            data="base.res_partner_2,Deco Addict Renamed,new-deco@example.com\n",
+        )
+        options = dict(OPTIONS, import_match_only_fields=["email"])
+        result = record.execute_import(["id", "name", "email"], [], options)
+        self.assertFalse(result["messages"])
+        self.assertEqual(deco_addict.name, "Deco Addict Renamed")
+        self.assertEqual(deco_addict.email, "new-deco@example.com")
 
     def test_res_users_login(self):
         """Change name based on login."""
