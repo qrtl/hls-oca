@@ -3,11 +3,12 @@
 {
     "name": "Purchase Order Secondary Unit",
     "summary": "Purchase product in a secondary unit",
-    "version": "18.0.1.2.1",
+    "version": "18.0.1.2.4",
     "development_status": "Beta",
     "category": "Purchase",
     "website": "https://github.com/OCA/purchase-workflow",
     "author": "Tecnativa, Odoo Community Association (OCA)",
+    "maintainers": ["sergio-teruel"],
     "license": "AGPL-3",
     "application": False,
     "installable": True,
