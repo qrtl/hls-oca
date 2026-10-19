@@ -168,29 +168,24 @@ class TestQwebFieldOptions(TransactionCase):
 
     def test_qweb_field_option_with_domain(self):
         values = {"report_type": "pdf"}
-        box_uom = self.env["uom.uom"].create(
-            {
-                "name": "Box",
-                "category_id": self.env.ref("uom.product_uom_categ_unit").id,
-                "uom_type": "bigger",
-                "factor_inv": 12.0,
-            }
-        )
+        jpy_currency = self.env.ref("base.JPY")
+        jpy_currency.active = True
+        self.qweb_options_rec.digits = 2
         self.env["qweb.field.options"].create(
             {
                 "res_model_id": self.test_model.id,
-                "field_id": self.quantity_field.id,
-                "domain": f"[('uom_id', '=', {box_uom.id})]",
+                "field_id": self.value_field.id,
+                "domain": f"[('currency_id', '=', {jpy_currency.id})]",
                 "digits": 0,
             }
         )
-        self.test_record.write({"uom_id": self.unit_uom.id, "quantity": 12.56})
         _, content, _ = self.IrQweb._get_field(
-            self.test_record, "quantity", False, False, {}, values
+            self.test_record, "value", False, False, {}, values
         )
-        self.assertEqual(content, "12.560")
-        self.test_record.uom_id = box_uom.id
+        self.assertEqual(content, "1.00")
+        # Test with JPY: domain matches, uses JPY-specific option (0 digits)
+        self.test_record.currency_id = jpy_currency.id
         _, content, _ = self.IrQweb._get_field(
-            self.test_record, "quantity", False, False, {}, values
+            self.test_record, "value", False, False, {}, values
         )
-        self.assertEqual(content, "13")
+        self.assertEqual(content, "1")
