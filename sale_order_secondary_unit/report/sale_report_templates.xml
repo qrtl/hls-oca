@@ -9,6 +9,7 @@
                 name="th_secondary_unit"
                 class="text-end"
                 t-if="not doc.company_id.hide_secondary_uom_column(doc)"
+                groups="uom.group_uom"
             >
                 <strong>Second Qty</strong>
             </th>
@@ -18,6 +19,7 @@
                 id="secondary_unit"
                 class="text-end"
                 t-if="not doc.company_id.hide_secondary_uom_column(doc)"
+                groups="uom.group_uom"
             >
                 <span t-field="line.secondary_uom_qty" />
                 <span t-field="line.secondary_uom_id" />
@@ -36,7 +38,7 @@
         <xpath expr="//span[@t-field='line.product_uom']" position="after">
             <t t-if="line.get_secondary_uom_display_mode() == 'secondary'">
                 <span t-field="line.secondary_uom_qty" />
-                <span t-field="line.secondary_uom_id" />
+                <span t-field="line.secondary_uom_id" groups="uom.group_uom" />
             </t>
         </xpath>
         <xpath expr="//span[@t-field='line.product_uom_qty']/.." position="inside">
