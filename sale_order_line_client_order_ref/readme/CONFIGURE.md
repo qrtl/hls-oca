@@ -29,12 +29,12 @@ Lines.
 
 1. **Set the company-wide default**
    - Go to **Sales → Configuration → Settings**
-   - In **Sales Order Line Customer Order Ref Policy**, choose the default policy to apply to all sales orders.
+   - In **Sales Order Line Customer Order Ref Sync Policy**, choose the default policy to apply to all sales orders.
 
 2. **(Optional) Set a partner-specific policy**
    - Go to **Contacts → Select a partner**
    - Open the **Sales & Purchase** tab
-   - In **Sales Order Line Customer Order Ref Policy**, choose the policy to apply to
+   - In **Sales Order Line Customer Order Ref Sync Policy**, choose the policy to apply to
      that partner. If not set, the company-wide policy will be applied to this partner’s
      sales orders.
 

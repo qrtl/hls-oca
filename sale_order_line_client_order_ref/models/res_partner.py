@@ -11,7 +11,7 @@ class ResPartner(models.Model):
 
     so_line_client_ref_policy = fields.Selection(
         selection=REF_POLICY_SELECTION,
-        string="SO Line Customer Order Ref Policy",
+        string="SO Line Customer Order Ref Sync Policy",
         help=(
             "Controls how the Sales Order's Customer Order Reference is applied to "
             "sales order lines. This setting overrides the company-level "

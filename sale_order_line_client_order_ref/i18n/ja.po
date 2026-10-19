@@ -6,10 +6,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-13 09:10+0000\n"
-"PO-Revision-Date: 2026-04-13 09:10+0000\n"
+"POT-Creation-Date: 2025-12-02 03:30+0000\n"
+"PO-Revision-Date: 2025-12-02 03:30+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -88,7 +89,7 @@ msgstr "請求明細の説明に顧客発注番号を含める"
 #. module: sale_order_line_client_order_ref
 #: model:ir.model,name:sale_order_line_client_order_ref.model_account_move_line
 msgid "Journal Item"
-msgstr "仕訳項目"
+msgstr "仕訳明細"
 
 #. module: sale_order_line_client_order_ref
 #: model:ir.model.fields.selection,name:sale_order_line_client_order_ref.selection__res_company__so_line_client_ref_policy__never
@@ -99,16 +100,17 @@ msgstr "なし"
 #. module: sale_order_line_client_order_ref
 #: model_terms:ir.ui.view,arch_db:sale_order_line_client_order_ref.report_invoice_document_inherit
 #: model_terms:ir.ui.view,arch_db:sale_order_line_client_order_ref.report_saleorder_document_inherit
+#, fuzzy
 msgid "Order Ref"
-msgstr "ご注文番号"
+msgstr "顧客発注番号"
 
 #. module: sale_order_line_client_order_ref
 #: model:ir.model.fields,field_description:sale_order_line_client_order_ref.field_res_company__so_line_client_ref_policy
 #: model:ir.model.fields,field_description:sale_order_line_client_order_ref.field_res_config_settings__so_line_client_ref_policy
 #: model:ir.model.fields,field_description:sale_order_line_client_order_ref.field_res_partner__so_line_client_ref_policy
 #: model:ir.model.fields,field_description:sale_order_line_client_order_ref.field_res_users__so_line_client_ref_policy
-msgid "SO Line Customer Order Ref Policy"
-msgstr "販売オーダ明細の顧客発注番号方針"
+msgid "SO Line Customer Order Ref Sync Policy"
+msgstr "販売オーダ明細の顧客発注番号同期方針"
 
 #. module: sale_order_line_client_order_ref
 #: model:ir.model,name:sale_order_line_client_order_ref.model_sale_order_line
@@ -117,8 +119,8 @@ msgstr "販売オーダ明細"
 
 #. module: sale_order_line_client_order_ref
 #: model_terms:ir.ui.view,arch_db:sale_order_line_client_order_ref.view_sale_config_settings
-msgid "Sales Order Line Customer Order Ref Policy"
-msgstr "販売オーダ明細の顧客発注番号方針"
+msgid "Sales Order Line Customer Order Ref Sync(chronization) Policy"
+msgstr "販売オーダ明細の顧客発注番号同期方針"
 
 #. module: sale_order_line_client_order_ref
 #: model_terms:ir.ui.view,arch_db:sale_order_line_client_order_ref.view_sale_config_settings
