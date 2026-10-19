@@ -2,10 +2,11 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo.fields import Command
-from odoo.tests.common import TransactionCase
+
+from odoo.addons.base.tests.common import BaseCommon
 
 
-class TestSaleLineNameOption(TransactionCase):
+class TestSaleLineNameOption(BaseCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -16,7 +17,6 @@ class TestSaleLineNameOption(TransactionCase):
                 "description_sale": "This is a test sale description.",
             }
         )
-        cls.partner = cls.env["res.partner"].create({"name": "Test Partner"})
 
     def test_get_product_multiline_description_sale_excludes_code(self):
         result = self.product.get_product_multiline_description_sale()
