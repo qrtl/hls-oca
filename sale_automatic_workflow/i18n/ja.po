@@ -1,19 +1,23 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* sale_automatic_workflow
+# * sale_automatic_workflow
 #
+# Translators:
+# OCA Transbot <transbot@odoo-community.org>, 2016
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-31 02:59+0000\n"
-"PO-Revision-Date: 2026-03-31 02:59+0000\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2016-12-31 01:43+0000\n"
+"PO-Revision-Date: 2026-04-01 07:17+0000\n"
+"Last-Translator: Shinnosuke Morita <m.shinnosuke1202@gmail.com>\n"
+"Language-Team: Japanese (https://www.transifex.com/oca/teams/23907/ja/)\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: sale_automatic_workflow
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_order__all_qty_delivered
@@ -30,34 +34,9 @@ msgid "Automatic Workflow"
 msgstr "自動ワークフロー"
 
 #. module: sale_automatic_workflow
-#: model:ir.filters,name:sale_automatic_workflow.automatic_workflow_create_invoice_filter
-msgid "Automatic Workflow Create Invoice Filter"
-msgstr "自動ワークフロー 請求書作成フィルタ"
-
-#. module: sale_automatic_workflow
 #: model:ir.actions.server,name:sale_automatic_workflow.ir_cron_automatic_workflow_job_ir_actions_server
 msgid "Automatic Workflow Job"
 msgstr "自動ワークフロージョブ"
-
-#. module: sale_automatic_workflow
-#: model:ir.filters,name:sale_automatic_workflow.automatic_workflow_order_filter
-msgid "Automatic Workflow Order Filter"
-msgstr "自動ワークフロー オーダフィルタ"
-
-#. module: sale_automatic_workflow
-#: model:ir.filters,name:sale_automatic_workflow.automatic_workflow_payment_filter
-msgid "Automatic Workflow Payment Filter"
-msgstr "自動ワークフロー 支払フィルタ"
-
-#. module: sale_automatic_workflow
-#: model:ir.filters,name:sale_automatic_workflow.automatic_workflow_sale_done_filter
-msgid "Automatic Workflow Sale Done Filter"
-msgstr "自動ワークフロー 販売完了フィルタ"
-
-#. module: sale_automatic_workflow
-#: model:ir.filters,name:sale_automatic_workflow.automatic_workflow_validate_invoice_filter
-msgid "Automatic Workflow Validate Invoice Filter"
-msgstr "自動ワークフロー 請求書検証フィルタ"
 
 #. module: sale_automatic_workflow
 #: model_terms:ir.ui.view,arch_db:sale_automatic_workflow.sale_order_view_form
@@ -70,7 +49,35 @@ msgid ""
 "Be careful, if you save the order with this setting, it could be auto-"
 "confirmed, even if you are editing it."
 msgstr ""
-"注意: この設定で注文を保存すると、編集中でも自動的に確定される場合があります。"
+"注意: この設定で注文を保存すると、編集中でも自動的に確定される場合がありま"
+"す。"
+
+#. module: sale_automatic_workflow
+#: model:ir.model,name:sale_automatic_workflow.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields,help:sale_automatic_workflow.field_res_config_settings__sale_workflow_copy_mode
+msgid ""
+"Controls whether the automatic workflow is propagated when a sale order is "
+"duplicated (this includes order splits):\n"
+"- Don't copy: the workflow is re-derived from the auto-assign rules only.\n"
+"- Copy: the origin workflow is always copied, auto-assign is not re-run.\n"
+"- Copy if auto-assign finds none: auto-assign runs first; the origin "
+"workflow is copied only when no workflow could be auto-assigned."
+msgstr ""
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields.selection,name:sale_automatic_workflow.selection__res_config_settings__sale_workflow_copy_mode__copy
+msgid "Copy"
+msgstr ""
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields,field_description:sale_automatic_workflow.field_res_config_settings__sale_workflow_copy_mode
+#: model_terms:ir.ui.view,arch_db:sale_automatic_workflow.res_config_settings_view_form
+msgid "Copy workflow on duplication"
+msgstr ""
 
 #. module: sale_automatic_workflow
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__create_invoice
@@ -111,6 +118,11 @@ msgid "Domain"
 msgstr "ドメイン"
 
 #. module: sale_automatic_workflow
+#: model:ir.model.fields.selection,name:sale_automatic_workflow.selection__res_config_settings__sale_workflow_copy_mode__no_copy
+msgid "Don't copy"
+msgstr ""
+
+#. module: sale_automatic_workflow
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__invoice_date_is_order_date
 msgid "Force Invoice Date"
 msgstr "請求日の強制"
@@ -125,7 +137,9 @@ msgstr "ID"
 #: model:ir.model.fields,help:sale_automatic_workflow.field_sale_workflow_process__warning
 msgid ""
 "If set, displays the message when an userselects the process on a sale order"
-msgstr "設定されている場合、ユーザが販売オーダでプロセスを選択した際にメッセージを表示します。"
+msgstr ""
+"設定されている場合、ユーザが販売オーダでプロセスを選択した際にメッセージを表"
+"示します"
 
 #. module: sale_automatic_workflow
 #: model:ir.model.fields,help:sale_automatic_workflow.field_sale_workflow_process__invoice_service_delivery
@@ -133,8 +147,8 @@ msgid ""
 "If this box is checked, when the first invoice is created The service sale "
 "order lines will be included and will be marked as delivered"
 msgstr ""
-"チェックすると、最初の請求書作成時にサービス販売オーダ明細が含まれ、"
-"配送済みとしてマークされます。"
+"チェックすると、最初の請求書作成時にサービス販売オーダ明細が含まれ、配送済み"
+"としてマークされます"
 
 #. module: sale_automatic_workflow
 #: model_terms:ir.ui.view,arch_db:sale_automatic_workflow.sale_workflow_process_view_form
@@ -182,6 +196,18 @@ msgstr "オーダフィルタ"
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__order_filter_domain
 msgid "Order Filter Domain"
 msgstr "オーダフィルタドメイン"
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__property_payment_journal_id
+msgid "Payment Journal"
+msgstr ""
+
+#. module: sale_automatic_workflow
+#: model_terms:ir.ui.view,arch_db:sale_automatic_workflow.res_config_settings_view_form
+msgid ""
+"Propagate the automatic workflow when a sale order is duplicated (this "
+"includes order splits)."
+msgstr ""
 
 #. module: sale_automatic_workflow
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__register_payment
@@ -235,7 +261,7 @@ msgstr "販売チーム"
 msgid ""
 "Scheduler that will play automatically the validation of invoices, "
 "pickings..."
-msgstr "請求書や入出庫などの検証を自動的に実行するスケジューラ"
+msgstr "請求書や入出庫などの検証を自動的に実行するスケジューラ…"
 
 #. module: sale_automatic_workflow
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__send_order_confirmation_mail
@@ -246,6 +272,11 @@ msgstr "注文確認メールを送信"
 #: model:ir.model.fields,help:sale_automatic_workflow.field_sale_workflow_process__property_journal_id
 msgid "Set default journal to use on invoice"
 msgstr "請求書で使用するデフォルト仕訳帳を設定"
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields,help:sale_automatic_workflow.field_sale_workflow_process__property_payment_journal_id
+msgid "Set default journal to use on payment"
+msgstr ""
 
 #. module: sale_automatic_workflow
 #: model_terms:ir.ui.view,arch_db:sale_automatic_workflow.sale_workflow_process_view_form
@@ -283,12 +314,13 @@ msgid ""
 "When checked, after order confirmation, a confirmation email will be sent "
 "(if not already sent)."
 msgstr ""
-"チェックすると、注文確認後に確認メールが送信されます（まだ送信されていない場合）。"
+"チェックすると、注文確認後に確認メールが送信されます（まだ送信されていない場"
+"合）。"
 
 #. module: sale_automatic_workflow
 #: model:ir.model.fields,help:sale_automatic_workflow.field_sale_workflow_process__invoice_date_is_order_date
 msgid "When checked, the invoice date will be the same than the order's date"
-msgstr "チェックすると、請求日が注文日と同じになります。"
+msgstr "チェックすると、請求日が注文日と同じになります"
 
 #. module: sale_automatic_workflow
 #: model_terms:ir.ui.view,arch_db:sale_automatic_workflow.sale_workflow_process_view_form
@@ -300,3 +332,9 @@ msgstr "ワークフローオプション"
 #: code:addons/sale_automatic_workflow/models/sale_order.py:0
 msgid "Workflow Warning"
 msgstr "ワークフロー警告"
+
+#~ msgid "Last Modified on"
+#~ msgstr "最終更新日"
+
+#~ msgid "Invoice"
+#~ msgstr "請求書"
