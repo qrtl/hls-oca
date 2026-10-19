@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-02 10:22+0000\n"
-"PO-Revision-Date: 2023-11-29 04:58+0000\n"
-"Last-Translator: kikopeiro <francisco.peiro@factorlibre.com>\n"
+"PO-Revision-Date: 2026-06-27 05:36+0000\n"
+"Last-Translator: Ed-Spain <eduamoros@gmail.com>\n"
 "Language-Team: Spanish (https://www.transifex.com/oca/teams/23907/es/)\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: sale_automatic_workflow
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_order__all_qty_delivered
@@ -51,6 +51,33 @@ msgid ""
 msgstr ""
 "Sea cuidadoso si guarda el pedido con este ajuste: puede auto-confirmarse "
 "incluso aunque lo esté editando."
+
+#. module: sale_automatic_workflow
+#: model:ir.model,name:sale_automatic_workflow.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields,help:sale_automatic_workflow.field_res_config_settings__sale_workflow_copy_mode
+msgid ""
+"Controls whether the automatic workflow is propagated when a sale order is "
+"duplicated (this includes order splits):\n"
+"- Don't copy: the workflow is re-derived from the auto-assign rules only.\n"
+"- Copy: the origin workflow is always copied, auto-assign is not re-run.\n"
+"- Copy if auto-assign finds none: auto-assign runs first; the origin "
+"workflow is copied only when no workflow could be auto-assigned."
+msgstr ""
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields.selection,name:sale_automatic_workflow.selection__res_config_settings__sale_workflow_copy_mode__copy
+msgid "Copy"
+msgstr ""
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields,field_description:sale_automatic_workflow.field_res_config_settings__sale_workflow_copy_mode
+#: model_terms:ir.ui.view,arch_db:sale_automatic_workflow.res_config_settings_view_form
+msgid "Copy workflow on duplication"
+msgstr ""
 
 #. module: sale_automatic_workflow
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__create_invoice
@@ -89,6 +116,11 @@ msgstr "Nombre mostrado"
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__payment_filter_domain
 msgid "Domain"
 msgstr "Dominio"
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields.selection,name:sale_automatic_workflow.selection__res_config_settings__sale_workflow_copy_mode__no_copy
+msgid "Don't copy"
+msgstr ""
 
 #. module: sale_automatic_workflow
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__invoice_date_is_order_date
@@ -167,6 +199,18 @@ msgid "Order Filter Domain"
 msgstr "Dominio del filtro de pedido"
 
 #. module: sale_automatic_workflow
+#: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__property_payment_journal_id
+msgid "Payment Journal"
+msgstr "Diario de Pago"
+
+#. module: sale_automatic_workflow
+#: model_terms:ir.ui.view,arch_db:sale_automatic_workflow.res_config_settings_view_form
+msgid ""
+"Propagate the automatic workflow when a sale order is duplicated (this "
+"includes order splits)."
+msgstr ""
+
+#. module: sale_automatic_workflow
 #: model:ir.model.fields,field_description:sale_automatic_workflow.field_sale_workflow_process__register_payment
 msgid "Register Payment"
 msgstr "Registrar pago"
@@ -231,6 +275,11 @@ msgstr "Enviar correo de confirmación de Pedido"
 #: model:ir.model.fields,help:sale_automatic_workflow.field_sale_workflow_process__property_journal_id
 msgid "Set default journal to use on invoice"
 msgstr "Establezca el diario por defecto a usar en las facturas"
+
+#. module: sale_automatic_workflow
+#: model:ir.model.fields,help:sale_automatic_workflow.field_sale_workflow_process__property_payment_journal_id
+msgid "Set default journal to use on payment"
+msgstr "Definir por defecto el diario para usar para el pago"
 
 #. module: sale_automatic_workflow
 #: model_terms:ir.ui.view,arch_db:sale_automatic_workflow.sale_workflow_process_view_form
