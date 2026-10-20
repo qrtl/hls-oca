@@ -66,10 +66,12 @@ class ResUsers(models.Model):
 
     @api.model
     def _get_self_writable_groups(self):
-        group = self.env.ref(
+        groups = self.env.ref("base.group_multi_company")
+        if group := self.env.ref(
             "mail.group_mail_notification_type_inbox", raise_if_not_found=False
-        )
-        return group or self.env["res.groups"]
+        ):
+            groups |= group
+        return groups
 
     def set_groups_from_roles(self, force=False):
         """Set (replace) the groups following the roles defined on users.
@@ -102,6 +104,16 @@ class ResUsers(models.Model):
             to_remove = [(3, gr) for gr in groups_to_remove]
             groups = to_remove + to_add
             if groups:
-                vals = {"groups_id": groups}
+                # Prevent tiggering res_users_notification_type for share users
+                vals = {}
+                if (
+                    self.env.ref("base.group_user").id in groups_to_remove
+                    and "notification_type" in user._fields
+                    and user.notification_type == "inbox"
+                ):
+                    vals["notification_type"] = "email"
+                    pass
+
+                vals["groups_id"] = groups
                 super(ResUsers, user).write(vals)
         return True
